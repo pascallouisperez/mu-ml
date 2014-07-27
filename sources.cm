@@ -1,0 +1,12 @@
+Library
+  structure MumlLexer
+  structure LexerTest
+  (*functor MumlParseFn*)
+  (*structure MumlTest*)
+is
+  $/basis.cm
+  $/smlnj-lib.cm
+  $/ml-lpt-lib.cm
+  muml.grm : ml-antlr
+  muml.lex : ml-ulex
+  lexer_test.sml

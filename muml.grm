@@ -1,0 +1,12 @@
+%name Muml;
+
+%tokens
+  : KW_let ("let") | KW_in ("in") | KW_end ("end")
+  | KW_fn ("fn") | KW_fun ("fun")
+  | ID of string | NUM of Int.int
+  | LP ("(") | RP (")") | COMMA (",") | SEMI (";")
+  ;
+
+exp
+  :
+  ;
