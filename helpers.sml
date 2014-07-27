@@ -1,4 +1,4 @@
-structure LexerTest =
+structure Helpers =
   struct
     fun string_to_tokens(inputString: string): MumlTokens.token list =
       let
