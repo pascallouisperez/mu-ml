@@ -25,6 +25,7 @@ fun => ( T.KW_fun );
 ")" => ( T.RP );
 "," => ( T.COMMA );
 ";" => ( T.SEMI );
+"~" => ( T.NEG );
 " " | \n | \t => ( continue() );
 
 <CON_STRING> "\"" => ( YYBEGIN(INITIAL); T.CON_string("") );

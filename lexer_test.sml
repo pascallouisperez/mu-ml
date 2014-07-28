@@ -14,6 +14,9 @@ in
     makeTest("\"\"", [MumlTokens.CON_string("")]),
     makeTest("\"a\"", [MumlTokens.CON_string("a")]),
 
+    (* punctuation *)
+    makeTest("(),;~", [MumlTokens.LP, MumlTokens.RP, MumlTokens.COMMA, MumlTokens.SEMI, MumlTokens.NEG]),
+
     (* keywords *)
     makeTest("let", [MumlTokens.KW_let]),
     makeTest("in", [MumlTokens.KW_in])

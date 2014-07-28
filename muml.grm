@@ -5,7 +5,7 @@
   | KW_fn ("fn") | KW_fun ("fun")
   | CON_int of Int.int | CON_string of string
   | ID of string
-  | LP ("(") | RP (")") | COMMA (",") | SEMI (";")
+  | LP ("(") | RP (")") | COMMA (",") | SEMI (";") | NEG ("~")
   ;
 
 exp
