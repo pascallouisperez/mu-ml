@@ -173,20 +173,15 @@ Running the ``lexer_test.sml``:
   </tr>
   <tr>
     <td></td> <td></td>
-    <td> <tt>fn</tt> ⟨<i>funarg</i>⟩<sup>(,)</sup> <tt>=&gt;</tt> <i>exp</i> </td>
+    <td> <tt>fn</tt> ⟨<i>arg</i>⟩<sup>(,)</sup> <tt>=&gt;</tt> <i>exp</i> </td>
     <td> function (simple)</td>
   </tr>
   <tr><td></td></tr>
   <tr>
-    <td> <i>funarg</i> &nbsp;&nbsp;</td>
+    <td> <i>arg</i> &nbsp;&nbsp;</td>
     <td>::=&nbsp;&nbsp;</td>
-    <td> <i>id</i> </td>
-    <td> variable </td>
-  </tr>
-  <tr>
-    <td></td> <td></td>
-    <td> <i>id</i> <tt>:</tt> <i>type</i> </td>
-    <td> type annotation </td>
+    <td> <i>id</i> ⟨<tt>:</tt> <i>typ</i>⟩ </td>
+    <td> variable (optionally typed) </td>
   </tr>
 </tbody></table>
 
@@ -234,77 +229,18 @@ _TBD, further simplifications needed._
   <tbody><tr>
     <td> <i>dec</i> </td>
     <td>::=&nbsp;&nbsp;</td>
-    <td> <tt>val</tt> ⟨<i>var</i>⟩<sup>(,)</sup> <i>valbind</i> </td>
+    <td> <tt>val</tt> ⟨<i>var</i>⟩<sup>(,)</sup> <i>arg</i> <tt>=</tt> <i>exp</i> </td>
     <td> value </td>
   </tr>
   <tr>
     <td></td> <td></td>
-    <td> <tt>fun</tt> ⟨<i>var</i>⟩<sup>(,)</sup> <i>funbind</i> </td>
+    <td> <tt>fun</tt> ⟨<i>var</i>⟩<sup>(,)</sup> ⟨<i>arg</i>⟩<sup>(,)</sup> ⟨<tt>:</tt> <i>typ</i>⟩ <tt>=</tt> <i>exp</i> </td>
     <td> function </td>
   </tr>
   <tr>
     <td></td> <td></td>
     <td> <i>dec</i><sub>1</sub> ⟨<tt>;</tt>⟩ <i>dec</i><sub>2</sub> </td>
     <td> sequence </td>
-  </tr>
-  <tr>
-    <td> <i>valbind</i> </td>
-    <td>::=</td>
-    <td> <i>pat</i> <tt>=</tt> <i>exp</i> ⟨<tt>and</tt> <i>valbind</i>⟩ </td>
-    <td> destructuring </td>
-  </tr>
-  <tr><td></td></tr>
-  <tr>
-    <td> <i>funmatch</i> </td>
-    <td>::=</td>
-    <td> ⟨<tt>op</tt>⟩ <i>id</i> <i>pat</i><sub>1</sub> ... <i>pat</i><sub><i>n</i></sub> ⟨<tt>:</tt> <i>typ</i>⟩ <tt>=</tt> <i>exp</i> ⟨<tt>|</tt> <i>funmatch</i>⟩ &nbsp;&nbsp;</td>
-    <td> nonfix (<i>n</i> ≥ 1) </td>
-  </tr>
-  <tr>
-    <td></td> <td></td>
-    <td> <i>pat</i><sub>1</sub> <i>id</i> <i>pat</i><sub>2</sub>  ⟨<tt>:</tt> <i>typ</i>⟩ <tt>=</tt> <i>exp</i> ⟨<tt>|</tt> <i>funmatch</i>⟩ </td>
-    <td> infix </td>
-  </tr>
-  <tr>
-    <td></td> <td></td>
-    <td> <tt>(</tt> <i>pat</i><sub>1</sub> <i>id</i> <i>pat</i><sub>2</sub>  <tt>)</tt> <i>pat'</i><sub>1</sub> ... <i>pat'</i><sub><i>n</i></sub> ⟨<tt>:</tt> <i>typ</i>⟩ <tt>=</tt> <i>exp</i> ⟨<tt>|</tt> <i>funmatch</i>⟩ &nbsp;&nbsp; </td>
-    <td> infix (<i>n</i> ≥ 0) </td>
-  </tr>
-  <tr><td></td></tr>
-  <tr>
-    <td> <i>typbind</i> </td>
-    <td>::=</td>
-    <td> ⟨<i>var</i>⟩<sup>(,)</sup> <i>id</i> <tt>=</tt> <i>typ</i> ⟨<tt>and</tt> <i>typbind</i>⟩ </td>
-    <td> abbreviation </td>
-  </tr>
-  <tr><td></td></tr>
-  <tr>
-    <td> <i>datbind</i> </td>
-    <td>::=</td>
-    <td> ⟨<i>var</i>⟩<sup>(,)</sup> <i>id</i> <tt>=</tt> 
-           <i>conbind</i> ⟨<tt>and</tt> <i>datbind</i>⟩ &nbsp;&nbsp; </td>
-    <td> data type </td>
-  </tr>
-
-  <tr><td></td></tr>
-  <tr>
-    <td> <i>conbind</i> </td>
-    <td>::=</td>
-    <td> <i>id</i> ⟨<tt>of</tt> <i>typ</i>⟩ ⟨<tt>|</tt> <i>conbind</i>⟩ &nbsp;&nbsp; </td>
-    <td> data constructor </td>
-  </tr>
-
-  <tr><td></td></tr>
-  <tr>
-    <td> <i>exnbind</i>&nbsp;&nbsp; </td>
-    <td>::=</td>
-    <td> <i>id</i> ⟨<tt>of</tt> <i>typ</i>⟩ ⟨<tt>and</tt> <i>exnbind</i>⟩ </td>
-    <td> generative </td>
-  </tr>
-  <tr>
-    <td></td> <td></td>
-    <td> <i>id</i> <tt>=</tt> <i>longid</i> ⟨<tt>and</tt> <i>exnbind</i>⟩ </td>
-    <td> renaming </td>
   </tr>
 </tbody></table>
 
