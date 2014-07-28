@@ -9,8 +9,9 @@ Ast = struct
   datatype Exp =
       IntConstant of int
     | StringConstant of string
+    | Variable of string
     | App of Exp * Exp
-    | InfixApp of Exp * Exp * string
+    | InfixApp of Exp * string * Exp
     | Tuple of Exp list
     | Select of int
     (* sequence *)

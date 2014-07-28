@@ -3,9 +3,8 @@
 %let digit = [0-9];
 %let int = {digit}+;
 %let letter = [a-zA-Z];
-%let id = {letter}({letter} | {digit} | "'" | "_")*
-        | "<" | ">" | "+" | "-"
-        ;
+%let id = {letter}({letter} | {digit} | "'" | "_")*;
+%let op = ("<" | ">" | "+" | "-" | "^" | "*" | "=")+;
 
 %states CON_STRING;
 
@@ -26,7 +25,10 @@ then => ( T.KW_then );
 else => ( T.KW_else );
 andalso => ( T.KW_andalso );
 orelse => ( T.KW_orelse );
+"=>" => ( T.ARROW );
+"->" => ( T.TARROW );
 {id} => ( T.ID yytext );
+{op} => ( T.OP yytext );
 {int} => ( T.CON_int (valOf (Int.fromString yytext)) );
 "\"" => ( YYBEGIN(CON_STRING); continue() );
 "(" => ( T.LP );
@@ -36,11 +38,6 @@ orelse => ( T.KW_orelse );
 "," => ( T.COMMA );
 ";" => ( T.SEMI );
 ":" => ( T.COLON );
-"~" => ( T.NEG );
-"=>" => ( T.ARROW );
-"*" => ( T.TSTAR );
-"->" => ( T.TARROW );
-"=" => ( T.EQ );
 " " | \n | \t => ( continue() );
 
 <CON_STRING> "\"" => ( YYBEGIN(INITIAL); T.CON_string("") );

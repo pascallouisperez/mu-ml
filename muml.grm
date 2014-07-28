@@ -10,12 +10,19 @@
   | KW_if ("if") | KW_then ("then") | KW_else ("else")
   | KW_andalso ("andalso") | KW_orelse ("orelse")
   | CON_int of Int.int | CON_string of string
-  | ID of string
-  | LP ("(") | RP (")") | COMMA (",") | SEMI (";")| NEG ("~") | COLON (":")
+  | ID of string | OP of string
+  | LP ("(") | RP (")") | COMMA (",") | SEMI (";")| COLON (":")
   | LB ("[") | RB ("]")
-  | EQ ("=") | ARROW ("=>") | TARROW ("->") | TSTAR ("*")
+  | ARROW ("=>") | TARROW ("->")
   ;
 
 exp
+  : %try simpleExp OP simpleExp => ( A.InfixApp(simpleExp1, OP, simpleExp2) )
+  | %try simpleExp
+  ;
+
+simpleExp
   : CON_int => ( A.IntConstant(CON_int) )
+  | ID => ( A.Variable(ID) )
+  | KW_if exp KW_then exp KW_else exp => ( A.IfThenElse(exp1, exp2, exp3) )
   ;
