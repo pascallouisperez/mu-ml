@@ -12,6 +12,12 @@ Deltas from ML are:
 
 Or said another way, it's a small functional language expressed with ML syntax.
 
+## One Liners
+
+Running the ``lexer_test.sml``:
+
+    sml -m sources.cm SmlUnit.sml lexer_test.sml
+
 ## Grammar
 
 ### Core Language
@@ -25,7 +31,6 @@ Or said another way, it's a small functional language expressed with ML syntax.
     <td> <i>int</i> </td>
     <td> integer </td>
   </tr>
-  <tr><td></td></tr>
   <tr>
     <td></td> <td></td>
     <td> <i>string</i> </td>
