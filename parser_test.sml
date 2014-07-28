@@ -20,6 +20,21 @@ in
         Ast.IntConstant(2)
       )
     ),
+    makeTest("x y",
+      Ast.App(
+        Ast.Variable("x"),
+        Ast.Variable("y")
+      )
+    ),
+    makeTest("x (y z)",
+      Ast.App(
+        Ast.Variable("x"),
+        Ast.App(
+          Ast.Variable("y"),
+          Ast.Variable("z")
+        )
+      )
+    ),
     makeTest("if 1 then 2 else 3",
       Ast.IfThenElse(
         Ast.IntConstant(1),

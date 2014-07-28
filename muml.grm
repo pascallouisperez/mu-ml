@@ -18,6 +18,7 @@
 
 exp
   : %try simpleExp OP simpleExp => ( A.InfixApp(simpleExp1, OP, simpleExp2) )
+  | %try simpleExp simpleExp => ( A.App(simpleExp1, simpleExp2) )
   | %try simpleExp
   ;
 
@@ -25,4 +26,5 @@ simpleExp
   : CON_int => ( A.IntConstant(CON_int) )
   | ID => ( A.Variable(ID) )
   | KW_if exp KW_then exp KW_else exp => ( A.IfThenElse(exp1, exp2, exp3) )
+  | LP exp RP => ( exp )
   ;
