@@ -2,13 +2,14 @@
 
 %tokens
   : KW_let ("let") | KW_in ("in") | KW_end ("end")
-  | KW_fn ("fn") | KW_fun ("fun")
+  | KW_fn ("fn") | KW_fun ("fun") | KW_val ("val")
   | KW_if ("if") | KW_then ("then") | KW_else ("else")
   | KW_andalso ("andalso") | KW_orelse ("orelse")
   | CON_int of Int.int | CON_string of string
   | ID of string
-  | LP ("(") | RP (")") | COMMA (",") | SEMI (";") | NEG ("~")
-  | EQ ("=") | ARROW ("=>")
+  | LP ("(") | RP (")") | COMMA (",") | SEMI (";")| NEG ("~") | COLON (":")
+  | LB ("[") | RB ("]")
+  | EQ ("=") | ARROW ("=>") | TARROW ("->") | TSTAR ("*")
   ;
 
 exp

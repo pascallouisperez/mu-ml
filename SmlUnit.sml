@@ -81,6 +81,7 @@ structure ConsoleTestRunner : TESTRUNNER = struct
           (fn(m, r) => printOne(m, r))
           (messages_adjusted, results);
       in
-        ()
+        (* TODO(pascal): make exit depend on test result *)
+        OS.Process.exit(OS.Process.success)
       end;
 end
