@@ -1,5 +1,9 @@
 %name Muml;
 
+%defs (
+  structure A = Ast
+);
+
 %tokens
   : KW_let ("let") | KW_in ("in") | KW_end ("end")
   | KW_fn ("fn") | KW_fun ("fun") | KW_val ("val")
@@ -13,5 +17,5 @@
   ;
 
 exp
-  :
+  : CON_int => ( A.IntConstant(CON_int) )
   ;

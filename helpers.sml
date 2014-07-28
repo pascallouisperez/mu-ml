@@ -1,5 +1,10 @@
 structure Helpers =
   struct
+
+    exception ParseError of string
+
+    structure MUML = MumlParseFn(MumlLexer)
+
     fun string_to_tokens(inputString: string): MumlTokens.token list =
       let
         val initial_strm = MumlLexer.streamifyInstream (TextIO.openString inputString)
@@ -15,5 +20,16 @@ structure Helpers =
           end
       in
         dowork(initial_strm)
+      end
+
+    fun string_to_ast(inputString: string): Ast.Exp =
+      let
+        val strm = MumlLexer.streamifyInstream (TextIO.openString inputString)
+        val lexer = MumlLexer.lex (AntlrStreamPos.mkSourcemap())
+        val (r, strm', errs) = MUML.parse lexer strm
+      in
+        (case r
+          of SOME(exp) => exp
+          |  _ => raise ParseError ("parse error on " ^ inputString))
       end
   end

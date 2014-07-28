@@ -1,6 +1,7 @@
 Library
   structure MumlLexer
   structure MumlTokens
+  structure Ast
   structure Helpers
 is
   $/basis.cm
@@ -8,4 +9,5 @@ is
   $/ml-lpt-lib.cm
   muml.grm : ml-antlr
   muml.lex : ml-ulex
+  ast.sml
   helpers.sml
