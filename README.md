@@ -92,6 +92,13 @@ Running the ``lexer_test.sml``:
     <td> <i>id</i><sub>1</sub><tt>.</tt>···<tt>.</tt><i>id</i><sub><i>n</i></sub> </td>
     <td> qualified (<i>n</i> ≥ 1) </td>
   </tr>
+  <tr><td></td></tr>
+  <tr>
+    <td> <i>lab</i> &nbsp;&nbsp; </td>
+    <td>::=</td>
+    <td> <i>num</i> </td>
+    <td> number (may not start with 0) </td>
+  </tr>
 </tbody></table>
 
 #### Expressions
@@ -103,6 +110,11 @@ Running the ``lexer_test.sml``:
     <td>::=&nbsp;&nbsp;</td>
     <td> <i>con</i> </td>
     <td> constant </td>
+  </tr>
+  <tr>
+    <td></td> <td></td>
+    <td> <i>longid</i> </td>
+    <td> value </td>
   </tr>
   <tr>
     <td></td> <td></td>
@@ -124,6 +136,11 @@ Running the ``lexer_test.sml``:
     <td> <tt>(</tt> <i>exp</i><sub>1</sub> <tt>,</tt> ... <tt>,</tt>
                     <i>exp</i><sub><i>n</i></sub> <tt>)</tt> </td>
     <td> tuple (<i>n</i> ≠ 1) </td>
+  </tr>
+  <tr>
+    <td></td> <td></td>
+    <td> <tt>#</tt> <i>lab</i> </td>
+    <td> record selector </td>
   </tr>
   <tr>
     <td></td> <td></td>
