@@ -18,7 +18,17 @@ in
     makeTest("(),;~", [MumlTokens.LP, MumlTokens.RP, MumlTokens.COMMA, MumlTokens.SEMI, MumlTokens.NEG]),
 
     (* keywords *)
+    makeTest("if", [MumlTokens.KW_if]),
+    makeTest("then", [MumlTokens.KW_then]),
+    makeTest("else", [MumlTokens.KW_else]),
+    makeTest("andalso", [MumlTokens.KW_andalso]),
+    makeTest("orelse", [MumlTokens.KW_orelse]),
+
+    makeTest("fn", [MumlTokens.KW_fn]),
+    makeTest("fun", [MumlTokens.KW_fun]),
+
     makeTest("let", [MumlTokens.KW_let]),
-    makeTest("in", [MumlTokens.KW_in])
+    makeTest("in", [MumlTokens.KW_in]),
+    makeTest("end", [MumlTokens.KW_end])
   ])
 end
