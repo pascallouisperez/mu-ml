@@ -16,6 +16,9 @@ in
 
     (* punctuation *)
     makeTest("(),;~", [MumlTokens.LP, MumlTokens.RP, MumlTokens.COMMA, MumlTokens.SEMI, MumlTokens.NEG]),
+    makeTest("=", [MumlTokens.EQ]),
+    makeTest("=>", [MumlTokens.ARROW]),
+    makeTest("==>", [MumlTokens.EQ, MumlTokens.ARROW]),
 
     (* keywords *)
     makeTest("if", [MumlTokens.KW_if]),

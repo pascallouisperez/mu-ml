@@ -31,6 +31,8 @@ orelse => ( T.KW_orelse );
 "," => ( T.COMMA );
 ";" => ( T.SEMI );
 "~" => ( T.NEG );
+"=>" => ( T.ARROW );
+"=" => ( T.EQ );
 " " | \n | \t => ( continue() );
 
 <CON_STRING> "\"" => ( YYBEGIN(INITIAL); T.CON_string("") );
