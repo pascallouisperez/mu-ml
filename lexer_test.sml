@@ -42,6 +42,7 @@ in
     (* identifiers *)
     makeTest("a a1 a' a_", [MumlTokens.ID("a"), MumlTokens.ID("a1"), MumlTokens.ID("a'"), MumlTokens.ID("a_")]),
     makeTest("ab_ab_ab FooBar'Baz", [MumlTokens.ID("ab_ab_ab"), MumlTokens.ID("FooBar'Baz")]),
+    makeTest("><+-", [MumlTokens.ID(">"), MumlTokens.ID("<"), MumlTokens.ID("+"), MumlTokens.ID("-")]),
 
     (* programs *)
     makeTest("fun identity(x) = x", [
@@ -51,6 +52,14 @@ in
     makeTest("val identity = fn(x) => x", [
       MumlTokens.KW_val, MumlTokens.ID("identity"), MumlTokens.EQ, MumlTokens.KW_fn, MumlTokens.LP,
       MumlTokens.ID("x"), MumlTokens.RP, MumlTokens.ARROW, MumlTokens.ID("x")
+    ]),
+    makeTest("fun fib(n) = if n > 2 then fib(n-1) + fib(n-2) else 1", [
+      MumlTokens.KW_fun, MumlTokens.ID("fib"), MumlTokens.LP, MumlTokens.ID("n"), MumlTokens.RP,
+      MumlTokens.EQ, MumlTokens.KW_if, MumlTokens.ID("n"), MumlTokens.ID(">"), MumlTokens.CON_int(2),
+      MumlTokens.KW_then, MumlTokens.ID("fib"), MumlTokens.LP, MumlTokens.ID("n"), MumlTokens.ID("-"),
+      MumlTokens.CON_int(1), MumlTokens.RP, MumlTokens.ID("+"), MumlTokens.ID("fib"), MumlTokens.LP,
+      MumlTokens.ID("n"), MumlTokens.ID("-"), MumlTokens.CON_int(2), MumlTokens.RP,
+      MumlTokens.KW_else, MumlTokens.CON_int(1)
     ])
   ])
 end
