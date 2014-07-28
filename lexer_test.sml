@@ -7,6 +7,13 @@ let
       end));
 in
   ConsoleTestRunner.runTestCase([
+    (* constants *)
+    makeTest("0", [MumlTokens.CON_int(0)]),
+    makeTest("99", [MumlTokens.CON_int(99)]),
+
+    makeTest("\"\"", [MumlTokens.CON_string("")]),
+    makeTest("\"a\"", [MumlTokens.CON_string("a")]),
+
     (* keywords *)
     makeTest("let", [MumlTokens.KW_let]),
     makeTest("in", [MumlTokens.KW_in])
