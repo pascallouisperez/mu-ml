@@ -15,15 +15,13 @@ Ast = struct
     | Tuple of Exp list
     | Select of int
     (* sequence *)
-    (* let in end *)
     (* typed expression *)
     (* conjunction & discjunction, possibly as infix applications *)
     | IfThenElse of Exp * Exp * Exp
+    | LetIn of Exp list * Exp
     | Fn of Arg list * Exp
-    ;
-
-  datatype Dec =
-      Valdec of Arg list * Exp
+    | Valdec of Arg * Exp
+    (* TupleValdec of Arg list * Exp *)
     | Fundec of Arg list * Exp
     ;
 

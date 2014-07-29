@@ -1,3 +1,8 @@
 - Clean up punctuation vs ID usage, needs to be the latter
 - Implement string constants
 - Correct function argument parsing, odd behavior with ml-antlr when * or ? applied to non-simple rule
+- Parser: tuples
+- Parser: sequences
+- Parser: record selector (and may want to simplify rule to be #lab exp vs #lab as being an exp)
+- Parser: handle multiple declarations in let in end
+- Parser: handle valdec with multiple names (for tuples), probably want to have TupleValdec

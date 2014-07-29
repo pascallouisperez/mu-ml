@@ -62,6 +62,17 @@ in
         Ast.IntConstant(3)
         )
     ),
+    makeTest("let val x = 4 in x end",
+      Ast.LetIn(
+        [
+          Ast.Valdec(
+            Ast.Name("x"),
+            Ast.IntConstant(4)
+          )
+        ],
+        Ast.Variable("x")
+      )
+    ),
     makeTest("fn() => 7",
       Ast.Fn(
         [],
