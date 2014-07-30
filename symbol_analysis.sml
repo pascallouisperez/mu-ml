@@ -29,6 +29,7 @@ SymbolAnalysis = struct
         in
           resolveImpl(fnScope, body)
         end
+      | resolveImpl(s, Ast.InfixApp(l, _, r)) = (resolveImpl(s, l); resolveImpl(s, r))
       | resolveImpl(s, t) = ()
       ;
   in

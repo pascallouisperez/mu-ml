@@ -1,46 +1,11 @@
 let
-  fun s(name) = ref {lab = name, id = 0};
-
-  fun argeq(Ast.Name(l), Ast.Name(r)) = #lab (!l) = #lab (!r)
-    ;
-
-  fun listeq(comp)(l, r) = case (l, r)
-    of (nil, nil) => true
-    | (l1 :: l2, r1 :: r2) => comp(l1, r1) andalso listeq comp (l2, r2)
-    | (_, _) => false
-    ;
-
-  fun eq(Ast.IntConstant(l1), Ast.IntConstant(r1)) = l1 = r1
-    | eq(Ast.StringConstant(l1), Ast.StringConstant(r1)) = l1 = r1
-    | eq(Ast.Variable(l1), Ast.Variable(r1)) = #lab (!l1) = #lab (!r1)
-    | eq(Ast.App(l1, l2), Ast.App(r1, r2)) =
-        eq(l1, r1) andalso
-        eq(l2, r2)
-    | eq(Ast.InfixApp(l1, opl, l2), Ast.InfixApp(r1, opr, r2)) =
-        eq(l1, r1) andalso
-        opl = opr andalso
-        eq(l2, r2)
-    | eq(Ast.IfThenElse(l1, l2, l3), Ast.IfThenElse(r1, r2, r3)) =
-        eq(l1, r1) andalso
-        eq(l2, r2) andalso
-        eq(l3, r3)
-    | eq(Ast.LetIn(l1, l2), Ast.LetIn(r1, r2)) =
-        listeq eq (l1, r1) andalso
-        eq(l2, r2)
-    | eq(Ast.Fn(l1, l2), Ast.Fn(r1, r2)) =
-        listeq argeq (l1, r1) andalso
-        eq(l2, r2)
-    | eq(Ast.Valdec(l1, l2), Ast.Valdec(r1, r2)) =
-        argeq(l1, r1) andalso
-        eq(l2, r2)
-    | eq(_, _) = false
-    ;
+  fun s(name) = ref (Ast.create_symbol name)
 
   fun makeTest(input: string, expected: Ast.Exp) = (input,
       fn() => Assert.assertTrue(let
         val actuals = Helpers.string_to_ast(input)
       in
-        eq(actuals, expected)
+        Ast.eq(actuals, expected)
       end));
 in
   ConsoleTestRunner.runTestCase([

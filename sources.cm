@@ -3,11 +3,14 @@ Library
   structure MumlTokens
   structure Ast
   structure Helpers
+  structure SymbolAnalysis
 is
   $/basis.cm
   $/smlnj-lib.cm
   $/ml-lpt-lib.cm
   muml.grm : ml-antlr
   muml.lex : ml-ulex
+  symbol_analysis.sml
+  scope.sml
   ast.sml
   helpers.sml

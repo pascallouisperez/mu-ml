@@ -26,7 +26,7 @@ structure Helpers =
       let
         val strm = MumlLexer.streamifyInstream (TextIO.openString inputString)
         val lexer = MumlLexer.lex (AntlrStreamPos.mkSourcemap())
-        val (r, strm', errs, _) = MUML.parse lexer strm
+        val (r, strm', errs) = MUML.parse lexer strm
       in
         (case r
           of SOME(exp) => exp
