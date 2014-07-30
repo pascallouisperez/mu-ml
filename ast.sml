@@ -78,9 +78,9 @@ Ast = struct
   fun toString(IntConstant(v)) = Int.toString v
     | toString(StringConstant(v)) = "\"" ^ v ^ "\""
     | toString(Variable(r)) = toString_sym (!r)
-    (*| toString(App)*)
+    | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
     | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)
-    (*| toString(IfThenElse)*)
+    | toString(IfThenElse(c, l, r)) = "if " ^ toString(c) ^ " then " ^ toString(l) ^ " else " ^ toString(r)
     (*| toString(LetIn)*)
     | toString(Fn(args, body)) = "fn(" ^ (toString_list toString_arg args) ^ ") => " ^ toString(body)
     (*| toString(Valdec)*)

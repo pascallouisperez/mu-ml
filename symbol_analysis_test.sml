@@ -30,6 +30,27 @@ in
           Ast.Variable(ref {lab="y",id=2})
         )
       )
+    ),
+    makeTest(
+      Ast.Fn([Ast.Name(s("x"))], Ast.App(Ast.Variable(s("x")), Ast.Variable(s("x")))),
+      Ast.Fn(
+        [Ast.Name(ref {id=1,lab="x"})],
+        Ast.App(
+          Ast.Variable(ref {id=1,lab="x"}),
+          Ast.Variable(ref {id=1,lab="x"})
+        )
+      )
+    ),
+    makeTest(
+      Ast.Fn([Ast.Name(s("x"))], Ast.IfThenElse(Ast.Variable(s("x")), Ast.Variable(s("x")), Ast.Variable(s("x")))),
+      Ast.Fn(
+        [Ast.Name(ref {id=1,lab="x"})],
+        Ast.IfThenElse(
+          Ast.Variable(ref {id=1,lab="x"}),
+          Ast.Variable(ref {id=1,lab="x"}),
+          Ast.Variable(ref {id=1,lab="x"})
+        )
+      )
     )
   ])
 end

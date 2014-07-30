@@ -29,8 +29,11 @@ SymbolAnalysis = struct
         in
           resolveImpl(fnScope, body)
         end
+      | resolveImpl(s, Ast.App(l, r)) = (resolveImpl(s, l); resolveImpl(s, r))
       | resolveImpl(s, Ast.InfixApp(l, _, r)) = (resolveImpl(s, l); resolveImpl(s, r))
-      | resolveImpl(s, t) = ()
+      | resolveImpl(s, Ast.IfThenElse(c, l, r)) = (resolveImpl(s, c); resolveImpl(s, l); resolveImpl(s, r))
+      | resolveImpl(s, Ast.IntConstant(_)) = ()
+      | resolveImpl(s, Ast.StringConstant(_)) = ()
       ;
   in
     resolveImpl(LinkedScope.create_empty(), t)
