@@ -32,12 +32,14 @@ simpleExp
   ;
 
 fnArgs
-  : LP arglist? RP => ( (case arglist of SOME(l) => l | NONE => []) )
+  : LP RP => ( [] )
+  | LP arglist RP => ( arglist )
   | ID => ( [A.Name(ref (A.create_symbol ID))] )
   ;
 
 arglist
-  : ID (COMMA ID)* => ( [A.Name(ref (A.create_symbol ID))] )
+  : %try ID COMMA arglist => ( A.Name(ref (A.create_symbol ID)) :: arglist )
+  | %try ID => ( [A.Name(ref (A.create_symbol ID))] )
   ;
 
 dec
