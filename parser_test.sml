@@ -75,6 +75,25 @@ in
         Ast.Variable(s("x"))
       )
     ),
+    makeTest("let val x = 4; val y = 7 in x + y end",
+      Ast.LetIn(
+        [
+          Ast.Valdec(
+            Ast.Name(s("x")),
+            Ast.IntConstant(4)
+          ),
+          Ast.Valdec(
+            Ast.Name(s("y")),
+            Ast.IntConstant(7)
+          )
+        ],
+        Ast.InfixApp(
+          Ast.Variable(s("x")),
+          "+",
+          Ast.Variable(s("y"))
+        )
+      )
+    ),
     makeTest("let fun id(x) = x in id 5 end",
       Ast.LetIn(
         [
@@ -84,6 +103,27 @@ in
               [Ast.Name(s("x"))],
               Ast.Variable(s("x"))
             )
+          )
+        ],
+        Ast.App(
+          Ast.Variable(s("id")),
+          Ast.IntConstant(5)
+        )
+      )
+    ),
+    makeTest("let fun id(x) = x; val y = id in id 5 end",
+      Ast.LetIn(
+        [
+          Ast.Fundec(
+            Ast.Name(s("id")),
+            Ast.Fn(
+              [Ast.Name(s("x"))],
+              Ast.Variable(s("x"))
+            )
+          ),
+          Ast.Valdec(
+            Ast.Name(s("y")),
+            Ast.Variable(s("id"))
           )
         ],
         Ast.App(
