@@ -12,32 +12,34 @@
   structure T = MumlTokens
   type lex_result = T.token
   fun eof() = T.EOF
+  val stringbuf = ref "";
 );
 
-let => ( T.KW_let );
-in => ( T.KW_in );
-end => ( T.KW_end );
-fn => ( T.KW_fn );
-fun => ( T.KW_fun );
-val => ( T.KW_val );
-if => ( T.KW_if );
-then => ( T.KW_then );
-else => ( T.KW_else );
-andalso => ( T.KW_andalso );
-orelse => ( T.KW_orelse );
-"=>" => ( T.ARROW );
-"->" => ( T.TARROW );
-{id} => ( T.ID yytext );
-{op} => ( T.OP yytext );
-{int} => ( T.CON_int (valOf (Int.fromString yytext)) );
-"\"" => ( YYBEGIN(CON_STRING); continue() );
-"(" => ( T.LP );
-")" => ( T.RP );
-"[" => ( T.LB );
-"]" => ( T.RB );
-"," => ( T.COMMA );
-";" => ( T.SEMI );
-":" => ( T.COLON );
-" " | \n | \t => ( continue() );
+<INITIAL> let => ( T.KW_let );
+<INITIAL> in => ( T.KW_in );
+<INITIAL> end => ( T.KW_end );
+<INITIAL> fn => ( T.KW_fn );
+<INITIAL> fun => ( T.KW_fun );
+<INITIAL> val => ( T.KW_val );
+<INITIAL> if => ( T.KW_if );
+<INITIAL> then => ( T.KW_then );
+<INITIAL> else => ( T.KW_else );
+<INITIAL> andalso => ( T.KW_andalso );
+<INITIAL> orelse => ( T.KW_orelse );
+<INITIAL> "=>" => ( T.ARROW );
+<INITIAL> "->" => ( T.TARROW );
+<INITIAL> {id} => ( T.ID yytext );
+<INITIAL> {op} => ( T.OP yytext );
+<INITIAL> {int} => ( T.CON_int (valOf (Int.fromString yytext)) );
+<INITIAL> "\"" => ( YYBEGIN(CON_STRING); stringbuf := ""; continue() );
+<INITIAL> "(" => ( T.LP );
+<INITIAL> ")" => ( T.RP );
+<INITIAL> "[" => ( T.LB );
+<INITIAL> "]" => ( T.RB );
+<INITIAL> "," => ( T.COMMA );
+<INITIAL> ";" => ( T.SEMI );
+<INITIAL> ":" => ( T.COLON );
+<INITIAL> " " | \n | \t => ( continue() );
 
-<CON_STRING> "\"" => ( YYBEGIN(INITIAL); T.CON_string("") );
+<CON_STRING> "\"" => ( YYBEGIN(INITIAL); T.CON_string(!stringbuf) );
+<CON_STRING> [^"]* => ( stringbuf := (!stringbuf ^ yytext); continue() );

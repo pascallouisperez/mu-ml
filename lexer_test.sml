@@ -13,6 +13,8 @@ in
 
     makeTest("\"\"", [MumlTokens.CON_string("")]),
     makeTest("\"a\"", [MumlTokens.CON_string("a")]),
+    makeTest("\"hello world\"", [MumlTokens.CON_string("hello world")]),
+    makeTest("\"\\t\"", [MumlTokens.CON_string("\t")]),
 
     (* punctuation *)
     makeTest("()", [MumlTokens.LP, MumlTokens.RP]),
