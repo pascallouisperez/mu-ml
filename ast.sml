@@ -24,7 +24,7 @@ Ast = struct
     | Fn of Arg list * Exp
     | Valdec of Arg * Exp
     (* TupleValdec of Arg list * Exp *)
-    (*| Fundec of Arg list * Exp*)
+    | Fundec of Arg * Exp
     ;
 
   fun create_symbol(name) = {lab = name, id = 0}
@@ -61,6 +61,9 @@ Ast = struct
     | eq(Valdec(l1, l2), Valdec(r1, r2)) =
         argeq(l1, r1) andalso
         eq(l2, r2)
+    | eq(Fundec(l1, l2), Fundec(r1, r2)) =
+        argeq(l1, r1) andalso
+        eq(l2, r2)
     | eq(_, _) = false
     ;
 
@@ -81,10 +84,10 @@ Ast = struct
     | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
     | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)
     | toString(IfThenElse(c, l, r)) = "if " ^ toString(c) ^ " then " ^ toString(l) ^ " else " ^ toString(r)
-    (*| toString(LetIn)*)
+    | toString(LetIn([decl], body)) = "let " ^ toString(decl) ^ " in " ^ toString(body) ^ " end"
     | toString(Fn(args, body)) = "fn(" ^ (toString_list toString_arg args) ^ ") => " ^ toString(body)
     (*| toString(Valdec)*)
-    (*| toString(_) = ""*)
+    | toString(Fundec(name, body)) = "fun " ^ toString_arg(name) ^ " = " ^ toString(body)
     ;
 
 end

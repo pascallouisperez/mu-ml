@@ -42,8 +42,13 @@ arglist
 
 dec
   : KW_val valdec
+  | KW_fun fundec
   ;
 
 valdec
   : ID OP exp %where ( OP = "=" ) => ( A.Valdec(A.Name(ref (A.create_symbol ID)), exp) )
+  ;
+
+fundec
+  : ID fnArgs OP exp %where ( OP = "=" ) => ( A.Fundec(A.Name(ref (A.create_symbol ID)), A.Fn(fnArgs, exp)) )
   ;

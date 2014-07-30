@@ -75,6 +75,23 @@ in
         Ast.Variable(s("x"))
       )
     ),
+    makeTest("let fun id(x) = x in id 5 end",
+      Ast.LetIn(
+        [
+          Ast.Fundec(
+            Ast.Name(s("id")),
+            Ast.Fn(
+              [Ast.Name(s("x"))],
+              Ast.Variable(s("x"))
+            )
+          )
+        ],
+        Ast.App(
+          Ast.Variable(s("id")),
+          Ast.IntConstant(5)
+        )
+      )
+    ),
     makeTest("fn() => 7",
       Ast.Fn(
         [],
