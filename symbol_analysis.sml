@@ -64,6 +64,7 @@ SymbolAnalysis = struct
       | resolveImpl(s, Ast.IfThenElse(c, l, r)) = (resolveImpl(s, c); resolveImpl(s, l); resolveImpl(s, r); s)
       | resolveImpl(s, Ast.IntConstant(_)) = s
       | resolveImpl(s, Ast.StringConstant(_)) = s
+      | resolveImpl(s, Ast.Unit) = s
       ;
   in
     resolveImpl(LinkedScope.create_empty(), t)

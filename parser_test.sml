@@ -12,6 +12,9 @@ in
     makeTest("420",
       Ast.IntConstant(420)
     ),
+    makeTest("()",
+      Ast.Unit
+    ),
     makeTest("x",
       Ast.Variable(s("x"))
     ),

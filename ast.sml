@@ -11,6 +11,7 @@ Ast = struct
   datatype Exp =
       IntConstant of int
     | StringConstant of string
+    | Unit
     | Variable of Symbol ref
     | App of Exp * Exp
     | InfixApp of Exp * string * Exp
@@ -40,6 +41,7 @@ Ast = struct
 
   fun eq(IntConstant(l1), IntConstant(r1)) = l1 = r1
     | eq(StringConstant(l1), StringConstant(r1)) = l1 = r1
+    | eq(Unit, Unit) = true
     | eq(Variable(l1), Variable(r1)) = !l1 = !r1
     | eq(App(l1, l2), App(r1, r2)) =
         eq(l1, r1) andalso
@@ -80,6 +82,7 @@ Ast = struct
 
   fun toString(IntConstant(v)) = Int.toString v
     | toString(StringConstant(v)) = "\"" ^ v ^ "\""
+    | toString(Unit) = "()"
     | toString(Variable(r)) = toString_sym (!r)
     | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
     | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)

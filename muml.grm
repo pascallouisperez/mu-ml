@@ -29,6 +29,7 @@ simpleExp
   | KW_fn fnArgs ARROW exp => ( A.Fn(fnArgs, exp) )
   | KW_let declist KW_in exp KW_end => ( A.LetIn(declist, exp) )
   | LP exp RP => ( exp )
+  | LP RP => ( A.Unit )
   ;
 
 fnArgs
