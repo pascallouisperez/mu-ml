@@ -24,7 +24,6 @@ Ast = struct
     | LetIn of Exp list * Exp
     | Fn of Arg list * Exp
     | Valdec of Arg * Exp
-    (* TupleValdec of Arg list * Exp *)
     | Fundec of Arg * Exp
     ;
 

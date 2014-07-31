@@ -4,4 +4,3 @@
 - Parser: tuples
 - Parser: sequences
 - Parser: record selector (and may want to simplify rule to be #lab exp vs #lab as being an exp)
-- Parser: handle valdec with multiple names (for tuples), probably want to have TupleValdec
