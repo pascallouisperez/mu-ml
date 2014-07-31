@@ -67,9 +67,9 @@ Ast = struct
     | eq(_, _) = false
     ;
 
-  fun toString_list(toString)(ls) = case ls
+  fun toString_list(sep)(toString)(ls) = case ls
     of hd :: nil => toString(hd)
-    | hd1 :: hd2 :: tail => toString(hd1) ^ ", " ^ (toString_list toString (hd2 :: tail))
+    | hd1 :: hd2 :: tail => toString(hd1) ^ sep ^ " " ^ (toString_list sep toString (hd2 :: tail))
     |  nil => ""
     ;
 
@@ -84,9 +84,9 @@ Ast = struct
     | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
     | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)
     | toString(IfThenElse(c, l, r)) = "if " ^ toString(c) ^ " then " ^ toString(l) ^ " else " ^ toString(r)
-    | toString(LetIn([decl], body)) = "let " ^ toString(decl) ^ " in " ^ toString(body) ^ " end"
-    | toString(Fn(args, body)) = "fn(" ^ (toString_list toString_arg args) ^ ") => " ^ toString(body)
-    (*| toString(Valdec)*)
+    | toString(LetIn(decls, body)) = "let " ^ (toString_list ";" toString decls) ^ " in " ^ toString(body) ^ " end"
+    | toString(Fn(args, body)) = "fn(" ^ (toString_list "," toString_arg args) ^ ") => " ^ toString(body)
+    | toString(Valdec(name, body)) = "val " ^ toString_arg(name) ^ " = " ^ toString(body)
     | toString(Fundec(name, body)) = "fun " ^ toString_arg(name) ^ " = " ^ toString(body)
     ;
 
