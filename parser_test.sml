@@ -15,6 +15,16 @@ in
     makeTest("()",
       Ast.Unit
     ),
+    makeTest("\"\"",
+      Ast.StringConstant("")
+    ),
+    makeTest("(1,2,3)",
+      Ast.Tuple([
+        Ast.IntConstant(1),
+        Ast.IntConstant(2),
+        Ast.IntConstant(3)
+      ])
+    ),
     makeTest("x",
       Ast.Variable(s("x"))
     ),
@@ -58,6 +68,21 @@ in
           Ast.Variable(s("y")),
           Ast.Variable(s("z"))
         )
+      )
+    ),
+    makeTest("x(2)",
+      Ast.App(
+        Ast.Variable(s("x")),
+        Ast.IntConstant(2)
+      )
+    ),
+    makeTest("x(2, 3)",
+      Ast.App(
+        Ast.Variable(s("x")),
+        Ast.Tuple([
+          Ast.IntConstant(2),
+          Ast.IntConstant(3)
+        ])
       )
     ),
     makeTest("if 1 then 2 else 3",

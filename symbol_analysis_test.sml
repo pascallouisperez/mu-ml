@@ -17,6 +17,17 @@ in
       Ast.Fn([Ast.Name(s("x"))], Ast.Variable(s("y"))),
       Ast.Fn([Ast.Name(ref {id=1,lab="x"})], Ast.Variable(ref {lab="y",id=2}))
     ),
+    makeTest(Helpers.string_to_ast("fn(x) => (x, y, z, x)"),
+      Ast.Fn(
+        [Ast.Name(ref {id=1,lab="x"})],
+        Ast.Tuple([
+          Ast.Variable(ref {lab="x",id=1}),
+          Ast.Variable(ref {lab="y",id=2}),
+          Ast.Variable(ref {lab="z",id=3}),
+          Ast.Variable(ref {lab="x",id=1})
+        ])
+      )
+    ),
     makeTest(
       Ast.Fn(
         [Ast.Name(s("x")), Ast.Name(s("y"))],
