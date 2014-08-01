@@ -1,12 +1,6 @@
 structure
 LinkedScope = struct
 
-  structure StringMap = RedBlackMapFn(
-    struct
-      type ord_key = string
-      val compare = String.compare
-    end)
-
   datatype scope = S of Ast.Symbol StringMap.map ref * scope option
 
   fun create_empty() = S(ref StringMap.empty, NONE)

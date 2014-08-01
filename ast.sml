@@ -27,15 +27,38 @@ Ast = struct
     | Fundec of Arg * Exp
     ;
 
-  fun create_symbol(name) = {lab = name, id = 0}
+  datatype BaseKind =
+        KInt
+      | KString
+      | KBool
+      | KUnit
+      ;
 
-  fun argeq(Name(l), Name(r)) = !l = !r
-    ;
+  datatype Type =
+        BaseType of BaseKind
+      | TypeVariable of int
+      | ArrowType of Type * Type
+      | TupleType of Type list
+      ;
+
+  fun create_symbol(name) = {lab = name, id = 0}
 
   fun listeq(comp)(l, r) = case (l, r)
     of (nil, nil) => true
     | (l1 :: l2, r1 :: r2) => comp(l1, r1) andalso listeq comp (l2, r2)
     | (_, _) => false
+    ;
+
+  fun typeeq(BaseType kl, BaseType kr) = kl = kr
+    | typeeq(TypeVariable l, TypeVariable r) = l = r
+    | typeeq(ArrowType(l1, l2), ArrowType(r1, r2)) =
+        typeeq(l1, r1) andalso
+        typeeq(l2, r2)
+    | typeeq(TupleType l, TupleType r) = listeq typeeq (l, r)
+    | typeeq(_, _) = false
+    ;
+
+  fun argeq(Name(l), Name(r)) = !l = !r
     ;
 
   fun eq(IntConstant(l1), IntConstant(r1)) = l1 = r1
@@ -77,6 +100,15 @@ Ast = struct
 
   fun toString_sym(sym: Symbol) =
     if #id sym = 0 then #lab sym else (#lab sym) ^ "_" ^ (Int.toString (#id sym))
+
+  fun toString_type(BaseType(KInt)) = "int"
+    | toString_type(BaseType(KBool)) = "bool"
+    | toString_type(BaseType(KString)) = "string"
+    | toString_type(BaseType(KUnit)) = "unit"
+    | toString_type(TypeVariable(r)) = "'X_" ^ Int.toString r
+    | toString_type(ArrowType(l, r)) = toString_type(l) ^ " -> " ^ toString_type(r)
+    | toString_type(TupleType(l)) = toString_list "*" toString_type l
+    ;
 
   fun toString_arg(Name(r)) = toString_sym (!r)
 
