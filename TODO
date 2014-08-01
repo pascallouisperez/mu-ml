@@ -1,6 +1,7 @@
 - Clean up punctuation vs ID usage, needs to be the latter
 - Implement string constants [only escape sequence not working]
 - Correct function argument parsing, odd behavior with ml-antlr when * or ? applied to non-simple rule
-- Parser: tuples
 - Parser: sequences
 - Parser: record selector (and may want to simplify rule to be #lab exp vs #lab as being an exp)
+- Parser: constrain operators, and likely introduce an Op datatype
+- Do away with this Arg list business for functions, fundec and valdec and have patterns instead
