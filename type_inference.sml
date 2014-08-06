@@ -42,6 +42,7 @@ struct
         case (unify(l1, r1), unify(l2, r2)) of
           (SOME(u1), SOME(u2)) => SOME(Ast.ArrowType(u1, u2))
         | _ => NONE)
+    | (Ast.TypeVariable l, Ast.TypeVariable r) => SOME(Ast.TypeVariable (if l < r then l else r))
     | (Ast.TypeVariable l, _) => (
       case IntMap.find(!canonicalized, l) of
         SOME(left') => unify(left', right)
@@ -100,15 +101,19 @@ TypeInference =  struct
             end
           | Ast.Fn(args, body) =>
             let
+              fun argType(Ast.Name r) = Ast.TypeVariable (#id (!r))
+
               val argsType =
-                if List.null args
-                then Ast.BaseType Ast.KUnit
-                else Ast.TupleType(List.map (fn(Ast.Name r) => Ast.TypeVariable (#id (!r))) args)
+                case args of
+                  nil => Ast.BaseType Ast.KUnit
+                | hd :: nil => argType hd
+                | hd :: tl => Ast.TupleType(List.map argType args)
             in
               case inferImpl(body, Unifier.next_id()) of
                 SOME t => SOME(Ast.ArrowType(argsType, t))
               | NONE => NONE
             end
+          | Ast.Variable r => SOME(Ast.TypeVariable (#id (!r)))
           | _ => NONE
       in
         case optInferedType of

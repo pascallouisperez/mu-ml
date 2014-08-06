@@ -14,7 +14,7 @@ let
   fun good(input: string, expected: Ast.Type) = (input ^ ": " ^ Ast.toString_type(expected),
       fn() => Assert.assertTrue(
         case Helpers.string_to_infer(input) of
-          SOME(t) => Ast.typeeq(expected, t)
+          SOME(t) => expected = t
         | NONE => false
       )
     )
@@ -61,6 +61,14 @@ in
       (Ast.TypeVariable 1, Ast.ArrowType(Ast.TypeVariable 2, Ast.TypeVariable 2)),
       SOME(Ast.ArrowType(Ast.TypeVariable 2, Ast.TypeVariable 2))
     ),
+    checkUnifiy(
+      (Ast.TypeVariable 1, Ast.TypeVariable 2),
+      SOME(Ast.TypeVariable 1)
+    ),
+    checkUnifiy(
+      (Ast.TypeVariable 2, Ast.TypeVariable 1),
+      SOME(Ast.TypeVariable 1)
+    ),
 
     (* inference *)
     good("3", Ast.BaseType Ast.KInt),
@@ -69,6 +77,7 @@ in
     good("3 + 8", Ast.BaseType Ast.KInt),
     bad("3 + ())"),
     good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString])),
-    good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt))
+    good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt)),
+    good("fn(x) => x", Ast.ArrowType(Ast.TypeVariable 1, Ast.TypeVariable 1))
   ])
 end

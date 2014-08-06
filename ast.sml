@@ -49,15 +49,6 @@ Ast = struct
     | (_, _) => false
     ;
 
-  fun typeeq(BaseType kl, BaseType kr) = kl = kr
-    | typeeq(TypeVariable l, TypeVariable r) = l = r
-    | typeeq(ArrowType(l1, l2), ArrowType(r1, r2)) =
-        typeeq(l1, r1) andalso
-        typeeq(l2, r2)
-    | typeeq(TupleType l, TupleType r) = listeq typeeq (l, r)
-    | typeeq(_, _) = false
-    ;
-
   fun argeq(Name(l), Name(r)) = !l = !r
     ;
 
