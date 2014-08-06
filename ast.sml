@@ -28,18 +28,18 @@ Ast = struct
     ;
 
   datatype BaseKind =
-        KInt
-      | KString
-      | KBool
-      | KUnit
-      ;
+      KInt
+    | KString
+    | KBool
+    | KUnit
+    ;
 
   datatype Type =
-        BaseType of BaseKind
-      | TypeVariable of int
-      | ArrowType of Type * Type
-      | TupleType of Type list
-      ;
+      BaseType of BaseKind
+    | TypeVariable of int
+    | ArrowType of Type * Type
+    | TupleType of Type list
+    ;
 
   fun create_symbol(name) = {lab = name, id = 0}
 
