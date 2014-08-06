@@ -6,7 +6,7 @@ let
           ,
       fn() => Assert.assertTrue
         (
-          TypeInference.Unifier.reset();
+          TypeInference.Unifier.reset(0);
           TypeInference.Unifier.unify(left, right) = optExpected
         )
       )
@@ -15,20 +15,18 @@ let
       fn() => Assert.assertTrue(let
         val exp = Helpers.string_to_ast(input)
       in
-        SymbolAnalysis.resolve(exp);
-        case TypeInference.infer(exp)
-        of SOME(t) => Ast.typeeq(expected, t)
-        |  NONE => false
+        case TypeInference.infer(SymbolAnalysis.resolve(exp)) of
+          SOME(t) => Ast.typeeq(expected, t)
+        | NONE => false
       end))
 
   fun bad(input: string) = ("BAD " ^ input,
       fn() => Assert.assertTrue(let
         val exp = Helpers.string_to_ast(input)
       in
-        SymbolAnalysis.resolve(exp);
-        case TypeInference.infer(exp)
-        of SOME(t) => false
-        |  NONE => true
+        case TypeInference.infer(SymbolAnalysis.resolve(exp)) of
+          SOME(t) => false
+        | NONE => true
       end))
 in
   ConsoleTestRunner.runTestCase([
@@ -72,6 +70,7 @@ in
     good("()", Ast.BaseType Ast.KUnit),
     good("3 + 8", Ast.BaseType Ast.KInt),
     bad("3 + ())"),
-    good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString]))
+    good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString])),
+    good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt))
   ])
 end

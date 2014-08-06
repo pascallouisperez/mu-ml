@@ -1,6 +1,8 @@
 structure
 SymbolAnalysis = struct
 
+  type result = {program: Ast.Exp, max_symbol_id: int}
+
   fun resolve(t) = let
     val symbol_id = ref 0
 
@@ -68,7 +70,8 @@ SymbolAnalysis = struct
       | resolveImpl(s, Ast.Unit) = s
       ;
   in
-    resolveImpl(LinkedScope.create_empty(), t)
+    resolveImpl(LinkedScope.create_empty(), t);
+    {program = t, max_symbol_id = !symbol_id}
   end
 
 end

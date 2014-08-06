@@ -1,6 +1,6 @@
 signature
 UNIFIER = sig
-  val reset: unit -> unit
+  val reset: int -> unit
   val next_id: unit -> int
   val get: int * Ast.Type -> Ast.Type
   val put: int * Ast.Type -> unit
@@ -16,7 +16,7 @@ struct
 
   val canonicalized: (Ast.Type IntMap.map) ref = ref IntMap.empty
 
-  fun reset() = (id := 0; canonicalized := IntMap.empty)
+  fun reset(new_id) = (id := new_id; canonicalized := IntMap.empty)
 
   fun next_id() = (id := !id + 1; !id)
 
@@ -57,7 +57,7 @@ TypeInference =  struct
 
   structure Unifier = UnifierFn()
 
-  fun infer(t: Ast.Exp): Ast.Type option = let
+  fun infer(t: SymbolAnalysis.result): Ast.Type option = let
     fun op_of_type("+") = Ast.BaseType Ast.KInt
       | op_of_type("-") = Ast.BaseType Ast.KInt
       | op_of_type("*") = Ast.BaseType Ast.KInt
@@ -98,6 +98,17 @@ TypeInference =  struct
                 SOME ts => SOME(Ast.TupleType ts)
               | NONE => NONE
             end
+          | Ast.Fn(args, body) =>
+            let
+              val argsType =
+                if List.null args
+                then Ast.BaseType Ast.KUnit
+                else Ast.TupleType(List.map (fn(Ast.Name r) => Ast.TypeVariable (#id (!r))) args)
+            in
+              case inferImpl(body, Unifier.next_id()) of
+                SOME t => SOME(Ast.ArrowType(argsType, t))
+              | NONE => NONE
+            end
           | _ => NONE
       in
         case optInferedType of
@@ -105,8 +116,8 @@ TypeInference =  struct
         | NONE => NONE
       end
   in
-    Unifier.reset();
-    inferImpl(t, Unifier.next_id())
+    Unifier.reset(#max_symbol_id t);
+    inferImpl(#program t, Unifier.next_id())
   end
 
 end
