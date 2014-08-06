@@ -32,4 +32,8 @@ structure Helpers =
           of SOME(exp) => exp
           |  _ => raise ParseError ("parse error on " ^ inputString))
       end
+
+    fun string_to_infer(inputString: string): Ast.Type option =
+      TypeInference.infer(SymbolAnalysis.resolve(string_to_ast(inputString)))
+
   end

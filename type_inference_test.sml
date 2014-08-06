@@ -12,22 +12,20 @@ let
       )
 
   fun good(input: string, expected: Ast.Type) = (input ^ ": " ^ Ast.toString_type(expected),
-      fn() => Assert.assertTrue(let
-        val exp = Helpers.string_to_ast(input)
-      in
-        case TypeInference.infer(SymbolAnalysis.resolve(exp)) of
+      fn() => Assert.assertTrue(
+        case Helpers.string_to_infer(input) of
           SOME(t) => Ast.typeeq(expected, t)
         | NONE => false
-      end))
+      )
+    )
 
   fun bad(input: string) = ("BAD " ^ input,
-      fn() => Assert.assertTrue(let
-        val exp = Helpers.string_to_ast(input)
-      in
-        case TypeInference.infer(SymbolAnalysis.resolve(exp)) of
+      fn() => Assert.assertTrue(
+        case Helpers.string_to_infer(input) of
           SOME(t) => false
         | NONE => true
-      end))
+      )
+    )
 in
   ConsoleTestRunner.runTestCase([
     (* unification *)
