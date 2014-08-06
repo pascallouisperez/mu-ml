@@ -107,7 +107,7 @@ Ast = struct
     | toString_type(BaseType(KUnit)) = "unit"
     | toString_type(TypeVariable(r)) = "'X_" ^ Int.toString r
     | toString_type(ArrowType(l, r)) = toString_type(l) ^ " -> " ^ toString_type(r)
-    | toString_type(TupleType(l)) = toString_list "*" toString_type l
+    | toString_type(TupleType(l)) = toString_list " *" toString_type l
     ;
 
   fun toString_arg(Name(r)) = toString_sym (!r)

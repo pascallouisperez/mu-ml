@@ -66,6 +66,10 @@ TypeInference =  struct
       | op_of_type("^") = Ast.BaseType Ast.KString
       ;
 
+    (*
+      1. Bottom up inference of sub expressions
+      2. Unification of against constraint
+    *)
     fun inferImpl(exp: Ast.Exp, constraint_id: int): Ast.Type option =
       let
         val constraint_type = Unifier.get(constraint_id, Ast.TypeVariable constraint_id)
@@ -80,9 +84,22 @@ TypeInference =  struct
               val branch_id = Unifier.add(branch_type)
             in
               case (inferImpl(l, branch_id), inferImpl(r, branch_id)) of
-                (SOME(_), SOME(_)) => SOME(branch_type)
+                (SOME(_), SOME(_)) => Unifier.unify(constraint_type, branch_type)
               | _ => NONE
             end
+        | Ast.Tuple subExps =>
+          let
+            val subTypesOpts = List.map (fn(subExp) => inferImpl(subExp, Unifier.next_id())) subExps
+            val subTypesOpt = List.foldr (
+              fn(optType, optList) => case (optType, optList) of
+                  (SOME t, SOME l) => SOME(t :: l)
+                | _ => NONE
+              ) (SOME []) subTypesOpts
+          in
+            case subTypesOpt of
+              SOME ts => Unifier.unify(constraint_type, Ast.TupleType ts)
+            | NONE => NONE
+          end
         | _ => NONE
       end
   in

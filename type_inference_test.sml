@@ -71,6 +71,7 @@ in
     good("\"\"", Ast.BaseType Ast.KString),
     good("()", Ast.BaseType Ast.KUnit),
     good("3 + 8", Ast.BaseType Ast.KInt),
-    bad("3 + ())")
+    bad("3 + ())"),
+    good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString]))
   ])
 end
