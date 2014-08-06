@@ -2,7 +2,7 @@ signature
 UNIFIER = sig
   val reset: int -> unit
   val next_id: unit -> int
-  val get: int * Ast.Type -> Ast.Type
+  val get: int -> Ast.Type
   val put: int * Ast.Type -> unit
   val add: Ast.Type -> int
   val listItems: unit -> (int * Ast.Type) list
@@ -20,8 +20,11 @@ struct
 
   fun next_id() = (id := !id + 1; !id)
 
-  fun get(id: int, default: Ast.Type): Ast.Type =
-    case IntMap.find(!canonicalized, id) of SOME(c) => c | NONE => default
+  fun get(id: int): Ast.Type =
+    case IntMap.find(!canonicalized, id) of
+      SOME(Ast.TypeVariable id') => if id = id' then Ast.TypeVariable id' else get id'
+    | SOME(t) => t
+    | NONE => Ast.TypeVariable id
 
   fun put(id: int, value: Ast.Type): unit =
     canonicalized := IntMap.insert(!canonicalized, id, value)
@@ -36,17 +39,26 @@ struct
 
   fun listItems() = IntMap.listItemsi (!canonicalized)
 
-  fun unify(left: Ast.Type, right: Ast.Type): Ast.Type option = case (left, right) of
+  fun unify(left: Ast.Type, right: Ast.Type): Ast.Type option =
+    if left = right then SOME(left)
+    else case (left, right) of
       (Ast.BaseType kl, Ast.BaseType kr) => if kl = kr then SOME(left) else NONE
     | (Ast.ArrowType(l1, l2), Ast.ArrowType(r1, r2)) => (
         case (unify(l1, r1), unify(l2, r2)) of
           (SOME(u1), SOME(u2)) => SOME(Ast.ArrowType(u1, u2))
         | _ => NONE)
-    | (Ast.TypeVariable l, Ast.TypeVariable r) => SOME(Ast.TypeVariable (if l < r then l else r))
     | (Ast.TypeVariable l, _) => (
       case IntMap.find(!canonicalized, l) of
         SOME(left') => unify(left', right)
-      | NONE => (put(l, right); SOME(right)))
+      | NONE => (
+        case right of
+          Ast.TypeVariable r =>
+            if l < r
+            then (put(r, left); SOME(left))
+            else (put(l, right); SOME(right))
+        | _ => (put(l, right); SOME(right))
+        )
+      )
     | (_, Ast.TypeVariable _) => unify(right, left)
     | _ => NONE
     ;
@@ -101,7 +113,9 @@ TypeInference =  struct
             end
           | Ast.Fn(args, body) =>
             let
-              fun argType(Ast.Name r) = Ast.TypeVariable (#id (!r))
+              val bodyTypeOpt = inferImpl(body, Unifier.next_id())
+
+              fun argType(Ast.Name r) = Unifier.get (#id (!r))
 
               val argsType =
                 case args of
@@ -109,15 +123,15 @@ TypeInference =  struct
                 | hd :: nil => argType hd
                 | hd :: tl => Ast.TupleType(List.map argType args)
             in
-              case inferImpl(body, Unifier.next_id()) of
+              case bodyTypeOpt of
                 SOME t => SOME(Ast.ArrowType(argsType, t))
               | NONE => NONE
             end
-          | Ast.Variable r => SOME(Ast.TypeVariable (#id (!r)))
+          | Ast.Variable r => SOME(Unifier.get (#id (!r)))
           | _ => NONE
       in
         case optInferedType of
-          SOME t => Unifier.unify(Unifier.get(constraint_id, Ast.TypeVariable constraint_id), t)
+          SOME t => Unifier.unify(Unifier.get constraint_id, t)
         | NONE => NONE
       end
   in

@@ -69,6 +69,20 @@ in
       (Ast.TypeVariable 2, Ast.TypeVariable 1),
       SOME(Ast.TypeVariable 1)
     ),
+    (
+      "1 U 2, 3 U 4, 2 U 4, all to 1",
+      fn() => Assert.assertTrue let
+      in
+        TypeInference.Unifier.reset(0);
+        TypeInference.Unifier.unify(Ast.TypeVariable 1, Ast.TypeVariable 2);
+        TypeInference.Unifier.unify(Ast.TypeVariable 3, Ast.TypeVariable 4);
+        TypeInference.Unifier.unify(Ast.TypeVariable 2, Ast.TypeVariable 3);
+
+        [Ast.TypeVariable 1, Ast.TypeVariable 1, Ast.TypeVariable 1, Ast.TypeVariable 1]
+          =
+        List.map (fn(i) => TypeInference.Unifier.get i) [1, 2, 3, 4]
+      end
+    ),
 
     (* inference *)
     good("3", Ast.BaseType Ast.KInt),
@@ -78,6 +92,7 @@ in
     bad("3 + ())"),
     good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString])),
     good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt)),
-    good("fn(x) => x", Ast.ArrowType(Ast.TypeVariable 1, Ast.TypeVariable 1))
+    good("fn(x) => x", Ast.ArrowType(Ast.TypeVariable 1, Ast.TypeVariable 1)),
+    good("fn(x) => x + x", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt))
   ])
 end
