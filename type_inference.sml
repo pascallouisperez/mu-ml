@@ -65,6 +65,43 @@ struct
 
 end
 
+functor DebugUnifierFn(delegate: UNIFIER) :> UNIFIER =
+struct
+
+  fun reset(id) = (
+    print ("reset " ^ (Int.toString id) ^ "\n");
+    delegate.reset(id)
+    )
+
+  fun next_id() = (
+    print "next_id()\n";
+    delegate.next_id()
+    )
+
+  fun get(id) = (
+    print ("get " ^ (Int.toString id) ^ "\n");
+    delegate.get(id)
+    )
+
+  fun put(id, value) = (
+    print ("put " ^ (Int.toString id) ^ ", " ^ (Ast.toString_type value) ^ "\n");
+    delegate.put(id, value)
+    )
+
+  fun add(value) = (
+    print ("add " ^ (Ast.toString_type value) ^ "\n");
+    delegate.add(value)
+    )
+
+  fun listItems() = delegate.listItems()
+
+  fun unify(left, right) = (
+    print ("unify " ^ (Ast.toString_type left) ^ ", " ^ (Ast.toString_type right) ^ "\n");
+    delegate.unify(left, right)
+    )
+
+end
+
 structure
 TypeInference =  struct
 
@@ -79,10 +116,6 @@ TypeInference =  struct
       | op_of_type("^") = Ast.BaseType Ast.KString
       ;
 
-    (*
-      1. Bottom up inference of sub expressions
-      2. Unification of against constraint
-    *)
     fun inferImpl(exp: Ast.Exp, constraint_id: int): Ast.Type option =
       let
         val optInferedType = case exp of
@@ -92,9 +125,8 @@ TypeInference =  struct
           | Ast.InfixApp(l, opr, r) =>
               let
                 val branch_type = op_of_type opr
-                val branch_id = Unifier.add(branch_type)
               in
-                case (inferImpl(l, branch_id), inferImpl(r, branch_id)) of
+                case (inferImpl(l, constraint_id), inferImpl(r, constraint_id)) of
                   (SOME(_), SOME(_)) => SOME(branch_type)
                 | _ => NONE
               end
