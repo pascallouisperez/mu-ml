@@ -93,6 +93,7 @@ in
     good("(1,2,\"three\")", Ast.TupleType([Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt, Ast.BaseType Ast.KString])),
     good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt)),
     good("fn(x) => x", Ast.ArrowType(Ast.TypeVariable 1, Ast.TypeVariable 1)),
-    good("fn(x) => x + x", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt))
+    good("fn(x) => x + x", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)),
+    good("fn(x) => fn(y) => x + y", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)))
   ])
 end
