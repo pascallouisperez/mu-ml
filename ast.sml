@@ -129,22 +129,22 @@ Ast = struct
 
   fun toString(exp: Exp): string =
     let
-      fun precedence(exp: Exp): int = case exp of
+      fun precedence(someExp: Exp): int = case someExp of
           IntConstant _ =>    1
         | StringConstant _ => 1
         | Unit =>             1
-        | Tuple _ =>          1
-        | Sequence _ =>       3
         | Variable _ =>       1
-        | App _ =>            1
-        | InfixApp _ =>       2
-        | IfThenElse _ =>     2
         | LetIn _ =>          1
-        | Fn _ =>             2
-        | Valdec _ =>         2
+        | App _ =>            2
+        | Tuple _ =>          2
+        | InfixApp _ =>       3
+        | IfThenElse _ =>     4
+        | Fn _ =>             5
+        | Valdec _ =>         6
+        | Sequence _ =>       6
 
       fun parenthise(otherExp) =
-        if precedence(exp) < precedence(otherExp)
+        if precedence(exp) <= precedence(otherExp)
         then "(" ^ (toString otherExp) ^ ")"
         else toString otherExp
     in
