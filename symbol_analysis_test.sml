@@ -113,6 +113,50 @@ in
         Ast.Variable(ref {id=1,lab="x"})
       )
     ),
+    makeTest(Helpers.string_to_ast("let fun a(x) = b(x); fun b(x) = x in b(9) end"),
+      Ast.LetIn(
+        [
+          Ast.Valdec(
+            Ast.Name(ref {id=1,lab="a"}),
+            true,
+            Ast.Fn(
+              [Ast.Name(ref {id=2,lab="x"})],
+              Ast.App(Ast.Variable(ref {id=3, lab="b"}), Ast.Variable(ref {id=2, lab="x"})))
+          ),
+          Ast.Valdec(
+            Ast.Name(ref {id=4,lab="b"}),
+            true,
+            Ast.Fn(
+              [Ast.Name(ref {id=5,lab="x"})],
+              Ast.Variable(ref {id=5, lab="x"})
+            )
+          )
+        ],
+        Ast.App(Ast.Variable(ref {id=4, lab="b"}), Ast.IntConstant(9))
+      )
+    ),
+    makeTest(Helpers.string_to_ast("let fun b(x) = x; fun a(x) = b(x) in b(9) end"),
+      Ast.LetIn(
+        [
+          Ast.Valdec(
+            Ast.Name(ref {id=1,lab="b"}),
+            true,
+            Ast.Fn(
+              [Ast.Name(ref {id=2,lab="x"})],
+              Ast.Variable(ref {id=2, lab="x"})
+            )
+          ),
+          Ast.Valdec(
+            Ast.Name(ref {id=3,lab="a"}),
+            true,
+            Ast.Fn(
+              [Ast.Name(ref {id=4,lab="x"})],
+              Ast.App(Ast.Variable(ref {id=1, lab="b"}), Ast.Variable(ref {id=4, lab="x"})))
+          )
+        ],
+        Ast.App(Ast.Variable(ref {id=1, lab="b"}), Ast.IntConstant(9))
+      )
+    ),
     verifyPolymorphic("let fun a(b) = c in d end", [1]),
     verifyPolymorphic("fn(x) => let fun a(b) = c; val d = 4 in d end", [2,5])
   ])
