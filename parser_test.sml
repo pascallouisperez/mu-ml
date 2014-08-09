@@ -203,6 +203,38 @@ in
         Ast.IntConstant(6)
       )
     ),
+    makeTest("fn(x) => x 2",
+      Ast.Fn(
+        [Ast.Name(s("x"))],
+        Ast.App(
+          Ast.Variable(s("x")),
+          Ast.IntConstant(2)
+        )
+      )
+    ),
+    makeTest("fn(x) => x + 2",
+      Ast.Fn(
+        [Ast.Name(s("x"))],
+        Ast.InfixApp(
+          Ast.Variable(s("x")),
+          "+",
+          Ast.IntConstant(2)
+        )
+      )
+    ),
+    makeTest("fn(x) => fn(y) => x + y",
+      Ast.Fn(
+        [Ast.Name(s("x"))],
+        Ast.Fn(
+          [Ast.Name(s("y"))],
+          Ast.InfixApp(
+            Ast.Variable(s("x")),
+            "+",
+            Ast.Variable(s("y"))
+          )
+        )
+      )
+    ),
     makeTest("1; 2; 3",
       Ast.Sequence([
         Ast.IntConstant(1),
