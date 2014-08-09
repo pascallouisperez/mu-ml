@@ -94,6 +94,9 @@ in
     good("fn() => 1", Ast.ArrowType(Ast.BaseType Ast.KUnit, Ast.BaseType Ast.KInt)),
     good("fn(x) => x", Ast.ArrowType(Ast.TypeVariable 1, Ast.TypeVariable 1)),
     good("fn(x) => x + x", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)),
-    good("fn(x) => fn(y) => x + y", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)))
+    good("fn(x) => fn(y) => x + y", Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.ArrowType(Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt))),
+    good("(fn(x) => x) 3", Ast.BaseType Ast.KInt),
+    good("let val x = () in x end", Ast.BaseType Ast.KUnit),
+    good("let fun id(x) = x in id 3 end", Ast.BaseType Ast.KInt)
   ])
 end

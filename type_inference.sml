@@ -118,6 +118,16 @@ TypeInference =  struct
 
     fun inferImpl(exp: Ast.Exp, constraint_id: int): Ast.Type option =
       let
+        fun argType(Ast.Name r) = Unifier.get (#id (!r))
+
+        fun multiInferImpl(subExps: Ast.Exp list): Ast.Type list option =
+          List.foldr
+            (fn(optType, optList) => case (optType, optList) of
+                (SOME t, SOME l) => SOME(t :: l)
+              | _ => NONE)
+            (SOME [])
+            (List.map (fn(subExp) => inferImpl(subExp, Unifier.next_id())) subExps)
+
         val optInferedType = case exp of
             Ast.IntConstant _ => SOME(Ast.BaseType Ast.KInt)
           | Ast.StringConstant _ => SOME(Ast.BaseType Ast.KString)
@@ -130,24 +140,25 @@ TypeInference =  struct
                   (SOME(_), SOME(_)) => SOME(branch_type)
                 | _ => NONE
               end
-          | Ast.Tuple subExps =>
+          | Ast.App(fnExp, argExp) =>
             let
-              val subTypesOpts = List.map (fn(subExp) => inferImpl(subExp, Unifier.next_id())) subExps
-              val subTypesOpt = List.foldr (
-                fn(optType, optList) => case (optType, optList) of
-                    (SOME t, SOME l) => SOME(t :: l)
-                  | _ => NONE
-                ) (SOME []) subTypesOpts
+              val (fnId, argId) = (Unifier.next_id(), Unifier.next_id())
             in
-              case subTypesOpt of
-                SOME ts => SOME(Ast.TupleType ts)
-              | NONE => NONE
+              case (inferImpl(fnExp, fnId), inferImpl(argExp, argId)) of
+                (SOME fnType, SOME argType) => (
+                  Unifier.unify(fnType, Ast.ArrowType(argType, Ast.TypeVariable constraint_id));
+                  SOME(Ast.TypeVariable constraint_id)
+                  )
+              | _ => NONE
             end
+          | Ast.Tuple subExps => (
+            case multiInferImpl subExps of
+              SOME ts => SOME(Ast.TupleType ts)
+            | NONE => NONE
+            )
           | Ast.Fn(args, body) =>
             let
               val bodyTypeOpt = inferImpl(body, Unifier.next_id())
-
-              fun argType(Ast.Name r) = Unifier.get (#id (!r))
 
               val argsType =
                 case args of
@@ -160,6 +171,21 @@ TypeInference =  struct
               | NONE => NONE
             end
           | Ast.Variable r => SOME(Unifier.get (#id (!r)))
+          | Ast.LetIn(decls, body) => (
+            case multiInferImpl decls of
+              SOME _ => inferImpl(body, constraint_id)
+            | NONE => NONE
+            )
+          | Ast.Valdec(arg, body) => (
+            case inferImpl(body, constraint_id) of
+              SOME t => Unifier.unify(argType(arg), t)
+            | NONE => NONE
+            )
+          | Ast.Fundec(arg, body) => (
+            case inferImpl(body, constraint_id) of
+              SOME t => Unifier.unify(argType(arg), t)
+            | NONE => NONE
+            )
           | _ => NONE
       in
         case optInferedType of
