@@ -158,6 +158,8 @@ TypeInference =  struct
                   | "/" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
                   | "^" => (Ast.BaseType Ast.KString, Ast.BaseType Ast.KString)
                   | "=" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KBool)
+                  | "<" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KBool)
+                  | ">" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KBool)
                 val branchId = Unifier.add(branchType)
               in
                 case (inferImpl(l, branchId), inferImpl(r, branchId)) of
