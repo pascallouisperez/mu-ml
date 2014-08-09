@@ -28,6 +28,18 @@ in
         ])
       )
     ),
+    makeTest(Helpers.string_to_ast("fn(x, y) => x; y; y; x; z"),
+      Ast.Fn(
+        [Ast.Name(ref {id=1,lab="x"}), Ast.Name(ref {id=2,lab="y"})],
+        Ast.Sequence([
+          Ast.Variable(ref {lab="x",id=1}),
+          Ast.Variable(ref {lab="y",id=2}),
+          Ast.Variable(ref {lab="y",id=2}),
+          Ast.Variable(ref {lab="x",id=1}),
+          Ast.Variable(ref {lab="z",id=3})
+        ])
+      )
+    ),
     makeTest(
       Ast.Fn(
         [Ast.Name(s("x")), Ast.Name(s("y"))],

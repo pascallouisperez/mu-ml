@@ -156,6 +156,11 @@ TypeInference =  struct
               SOME ts => SOME(Ast.TupleType ts)
             | NONE => NONE
             )
+          | Ast.Sequence subExps => (
+            case multiInferImpl subExps of
+              SOME ts => SOME(List.hd (List.rev ts))
+            | NONE => NONE
+            )
           | Ast.Fn(args, body) =>
             let
               val bodyTypeOpt = inferImpl(body, Unifier.next_id())

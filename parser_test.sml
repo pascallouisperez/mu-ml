@@ -192,6 +192,23 @@ in
         ),
         Ast.IntConstant(6)
       )
+    ),
+    makeTest("1; 2; 3",
+      Ast.Sequence([
+        Ast.IntConstant(1),
+        Ast.IntConstant(2),
+        Ast.IntConstant(3)
+      ])
+    ),
+    makeTest("1 + 2; 3",
+      Ast.Sequence([
+        Ast.InfixApp(
+          Ast.IntConstant(1),
+          "+",
+          Ast.IntConstant(2)
+        ),
+        Ast.IntConstant(3)
+      ])
     )
   ])
 end

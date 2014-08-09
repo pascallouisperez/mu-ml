@@ -17,7 +17,7 @@ Ast = struct
     | InfixApp of Exp * string * Exp
     | Tuple of Exp list
     (*| Select of int*)
-    (* sequence *)
+    | Sequence of Exp list
     (* typed expression *)
     (* conjunction & discjunction, possibly as infix applications *)
     | IfThenElse of Exp * Exp * Exp
@@ -56,6 +56,7 @@ Ast = struct
     | eq(StringConstant(l1), StringConstant(r1)) = l1 = r1
     | eq(Unit, Unit) = true
     | eq(Tuple(l), Tuple(r)) = listeq eq (l, r)
+    | eq(Sequence(l), Sequence(r)) = listeq eq (l, r)
     | eq(Variable(l1), Variable(r1)) = !l1 = !r1
     | eq(App(l1, l2), App(r1, r2)) =
         eq(l1, r1) andalso
@@ -107,6 +108,7 @@ Ast = struct
     | toString(StringConstant(v)) = "\"" ^ v ^ "\""
     | toString(Unit) = "()"
     | toString(Tuple(l)) = "(" ^ (toString_list "," toString l) ^ ")"
+    | toString(Sequence(l)) = toString_list ";" toString l
     | toString(Variable(r)) = toString_sym (!r)
     | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
     | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)

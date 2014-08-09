@@ -23,7 +23,17 @@ explist
   | %try exp => ( [exp] )
   ;
 
+expsequence
+  : %try appExp SEMI expsequence => ( appExp :: expsequence )
+  | %try appExp => ( [appExp] )
+  ;
+
 exp
+  : %try appExp SEMI expsequence => ( A.Sequence(appExp :: expsequence) )
+  | %try appExp
+  ;
+
+appExp
   : %try simpleExp OP simpleExp => ( A.InfixApp(simpleExp1, OP, simpleExp2) )
   | %try simpleExp simpleExp => ( A.App(simpleExp1, simpleExp2) )
   | %try simpleExp
