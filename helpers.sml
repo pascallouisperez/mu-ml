@@ -34,4 +34,18 @@ structure Helpers =
     fun string_to_infer(inputString: string): Ast.Type option =
       TypeInference.infer(SymbolAnalysis.resolve(string_to_ast(inputString)))
 
+    fun infer_and_print(inputString: string): unit = (
+      case string_to_infer(inputString) of
+        SOME t => (
+          print (inputString ^ ": ");
+          print (Ast.toString_type_helper (Ast.niceTvarPrinter ()) t);
+          print "\n";
+          ()
+          )
+      | NONE => (
+        print "type error\n";
+        ()
+        )
+      )
+
   end
