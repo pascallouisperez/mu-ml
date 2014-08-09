@@ -63,7 +63,17 @@ in
     ),
     makeTest("x y z",
       Ast.App(
+        Ast.App(
+          Ast.Variable(s("x")),
+          Ast.Variable(s("y"))
+        ),
+        Ast.Variable(s("z"))
+      )
+    ),
+    makeTest("x + y z",
+      Ast.InfixApp(
         Ast.Variable(s("x")),
+        "+",
         Ast.App(
           Ast.Variable(s("y")),
           Ast.Variable(s("z"))
