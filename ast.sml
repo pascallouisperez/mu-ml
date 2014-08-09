@@ -127,19 +127,41 @@ Ast = struct
 
   fun toString_arg(Name(r)) = toString_sym (!r)
 
-  fun toString(IntConstant(v)) = Int.toString v
-    | toString(StringConstant(v)) = "\"" ^ v ^ "\""
-    | toString(Unit) = "()"
-    | toString(Tuple(l)) = "(" ^ (toString_list "," toString l) ^ ")"
-    | toString(Sequence(l)) = toString_list ";" toString l
-    | toString(Variable(r)) = toString_sym (!r)
-    | toString(App(l, r)) = toString(l) ^ " " ^ toString(r)
-    | toString(InfixApp(exp1, ope, exp2)) = toString(exp1) ^ " " ^ ope ^ " " ^ toString(exp2)
-    | toString(IfThenElse(c, l, r)) = "if " ^ toString(c) ^ " then " ^ toString(l) ^ " else " ^ toString(r)
-    | toString(LetIn(decls, body)) = "let " ^ (toString_list ";" toString decls) ^ " in " ^ toString(body) ^ " end"
-    | toString(Fn(args, body)) = "fn(" ^ (toString_list "," toString_arg args) ^ ") => " ^ toString(body)
-    | toString(Valdec(name, recursive, body)) =
-        (if recursive then "fun " else "val ") ^ toString_arg(name) ^ " = " ^ toString(body)
-    ;
+  fun toString(exp: Exp): string =
+    let
+      fun precedence(exp: Exp): int = case exp of
+          IntConstant _ =>    1
+        | StringConstant _ => 1
+        | Unit =>             1
+        | Tuple _ =>          1
+        | Sequence _ =>       3
+        | Variable _ =>       1
+        | App _ =>            1
+        | InfixApp _ =>       2
+        | IfThenElse _ =>     2
+        | LetIn _ =>          1
+        | Fn _ =>             2
+        | Valdec _ =>         2
+
+      fun parenthise(otherExp) =
+        if precedence(exp) < precedence(otherExp)
+        then "(" ^ (toString otherExp) ^ ")"
+        else toString otherExp
+    in
+      case exp of
+        IntConstant(v) => Int.toString v
+      | StringConstant(v) => "\"" ^ v ^ "\""
+      | Unit => "()"
+      | Tuple(l) => "(" ^ (toString_list "," parenthise l) ^ ")"
+      | Sequence(l) => toString_list ";" parenthise l
+      | Variable(r) => toString_sym (!r)
+      | App(l, r) => (parenthise l) ^ " " ^ (parenthise r)
+      | InfixApp(exp1, ope, exp2) => (parenthise exp1) ^ " " ^ ope ^ " " ^ (parenthise exp2)
+      | IfThenElse(c, l, r) => "if " ^ (parenthise c) ^ " then " ^ (parenthise l) ^ " else " ^ (parenthise r)
+      | LetIn(decls, body) => "let " ^ (toString_list ";" toString decls) ^ " in " ^ toString(body) ^ " end"
+      | Fn(args, body) => "fn(" ^ (toString_list "," toString_arg args) ^ ") => " ^ (parenthise body)
+      | Valdec(name, recursive, body) =>
+          (if recursive then "fun " else "val ") ^ toString_arg(name) ^ " = " ^ (parenthise body)
+    end
 
 end
