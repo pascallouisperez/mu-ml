@@ -29,13 +29,17 @@ expsequence
   ;
 
 exp
-  : %try appExp SEMI expsequence => ( A.Sequence(appExp :: expsequence) )
+  : %try opExp SEMI expsequence => ( A.Sequence(opExp :: expsequence) )
+  | %try opExp
+  ;
+
+opExp
+  : %try appExp OP appExp => ( A.InfixApp(appExp1, OP, appExp2) )
   | %try appExp
   ;
 
 appExp
-  : %try simpleExp OP simpleExp => ( A.InfixApp(simpleExp1, OP, simpleExp2) )
-  | %try simpleExp simpleExp => ( A.App(simpleExp1, simpleExp2) )
+  : %try simpleExp simpleExp => ( A.App(simpleExp1, simpleExp2) )
   | %try simpleExp
   ;
 
