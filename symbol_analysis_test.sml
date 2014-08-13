@@ -7,6 +7,12 @@ let
       in
         Ast.eq(input, expected)
       end));
+  fun verifyPolymorphic(input: string, expected: int list) = (input,
+      fn() => Assert.assertTrue(let
+        val actuals = #polymorphic_symbols (SymbolAnalysis.resolve (Helpers.string_to_ast input))
+      in
+        (IntBinarySet.listItems actuals) = expected
+      end));
 in
   ConsoleTestRunner.runTestCase([
     makeTest(
@@ -28,7 +34,7 @@ in
         ])
       )
     ),
-    makeTest(Helpers.string_to_ast("fn(x, y) => x; y; y; x; z"),
+    makeTest(Helpers.string_to_ast("fn(x, y) => (x; y; y; x; z)"),
       Ast.Fn(
         [Ast.Name(ref {id=1,lab="x"}), Ast.Name(ref {id=2,lab="y"})],
         Ast.Sequence([
@@ -106,6 +112,8 @@ in
         [Ast.Fundec(Ast.Name(ref {id=1,lab="x"}), Ast.Fn([], Ast.Variable(ref {id=1,lab="x"})))],
         Ast.Variable(ref {id=1,lab="x"})
       )
-    )
+    ),
+    verifyPolymorphic("let fun a(b) = c in d end", [1]),
+    verifyPolymorphic("fn(x) => let fun a(b) = c; val d = 4 in d end", [2,5])
   ])
 end

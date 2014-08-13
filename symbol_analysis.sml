@@ -1,18 +1,31 @@
 structure
 SymbolAnalysis = struct
 
-  type result = {program: Ast.Exp, max_symbol_id: int}
+  type result = {
+    program: Ast.Exp,
+    max_symbol_id: int,
+    polymorphic_symbols: IntBinarySet.set
+  }
 
-  fun resolve(t) = let
+  fun resolve(t): result = let
     val symbol_id = ref 0
 
-    fun next_symbol(name: string) =
-      {lab = name, id = (symbol_id := !symbol_id + 1; !symbol_id)}
+    val polymorphic = ref IntBinarySet.empty
 
-    fun resolveArgImpl(s, Ast.Name(r)) =
+    fun next_symbol(name: string, poly: bool) =
+      let
+        val assigned_id = (symbol_id := !symbol_id + 1; !symbol_id)
+      in
+        if poly
+        then polymorphic := IntBinarySet.add(!polymorphic, assigned_id)
+        else ();
+        {lab = name, id = assigned_id}
+      end
+
+    fun resolveArgImpl(s, Ast.Name(r), poly) =
       let
         val name = #lab (!r)
-        val symbol = next_symbol(name)
+        val symbol = next_symbol(name, poly)
       in
         r := symbol;
         LinkedScope.insert(s, name, symbol);
@@ -25,13 +38,13 @@ SymbolAnalysis = struct
         in
           case LinkedScope.find(s, name)
           of SOME(sym) => (r := sym; s)
-          | NONE => (r := next_symbol name; s)
+          | NONE => (r := next_symbol(name, false); s)
         end
       | resolveImpl(s, Ast.Fn(args, body)) =
         let
           val fnScope = LinkedScope.create_inner s
         in
-          List.map (fn(arg) => resolveArgImpl(fnScope, arg)) args;
+          List.map (fn(arg) => resolveArgImpl(fnScope, arg, false)) args;
           resolveImpl(fnScope, body);
           s
         end
@@ -45,7 +58,7 @@ SymbolAnalysis = struct
           let
             val bodyScope = LinkedScope.create_inner s
             val valScope = LinkedScope.create_inner s
-            val (name, symbol) = (resolveImpl(bodyScope, body); resolveArgImpl(valScope, arg))
+            val (name, symbol) = (resolveImpl(bodyScope, body); resolveArgImpl(valScope, arg, true))
           in
             LinkedScope.insert(valScope, name, symbol);
             valScope
@@ -54,7 +67,7 @@ SymbolAnalysis = struct
           let
             val bodyScope = LinkedScope.create_inner s
             val valScope = LinkedScope.create_inner s
-            val (name, symbol) = resolveArgImpl(valScope, arg)
+            val (name, symbol) = resolveArgImpl(valScope, arg, true)
           in
             LinkedScope.insert(valScope, name, symbol);
             LinkedScope.insert(bodyScope, name, symbol);
@@ -72,7 +85,7 @@ SymbolAnalysis = struct
       ;
   in
     resolveImpl(LinkedScope.create_empty(), t);
-    {program = t, max_symbol_id = !symbol_id}
+    {program = t, max_symbol_id = !symbol_id, polymorphic_symbols = !polymorphic}
   end
 
 end

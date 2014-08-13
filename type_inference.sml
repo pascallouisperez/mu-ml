@@ -116,6 +116,27 @@ TypeInference =  struct
       | op_of_type("^") = Ast.BaseType Ast.KString
       ;
 
+    fun fresh(t) =
+      let
+        val assigns: (int IntMap.map) ref = ref IntMap.empty
+        fun freshImpl(t) = case t of
+            Ast.BaseType k => t
+          | Ast.TypeVariable r => (case IntMap.find(!assigns, r) of
+              SOME r' => Ast.TypeVariable r'
+            | NONE =>
+              let
+                val r' = Unifier.next_id()
+              in
+                assigns := IntMap.insert(!assigns, r, r');
+                Ast.TypeVariable r'
+              end
+            )
+          | Ast.ArrowType(l, r) => Ast.ArrowType(freshImpl l, freshImpl r)
+          | Ast.TupleType(ts) => Ast.TupleType(List.map freshImpl ts)
+      in
+        freshImpl t
+      end
+
     fun inferImpl(exp: Ast.Exp, constraint_id: int): Ast.Type option =
       let
         fun argType(Ast.Name r) = Unifier.get (#id (!r))
@@ -176,7 +197,10 @@ TypeInference =  struct
                 SOME t => SOME(Ast.ArrowType(argsType, t))
               | NONE => NONE
             end
-          | Ast.Variable r => SOME(Unifier.get (#id (!r)))
+          | Ast.Variable r =>
+              if IntBinarySet.member(#polymorphic_symbols t, #id (!r))
+              then SOME(fresh (Unifier.get (#id (!r))))
+              else SOME(Unifier.get (#id (!r)))
           | Ast.LetIn(decls, body) => (
             case multiInferImpl decls of
               SOME _ => inferImpl(body, constraint_id)
