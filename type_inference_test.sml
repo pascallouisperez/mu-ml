@@ -99,6 +99,7 @@ in
     good("\"1\"; (); 3", Ast.BaseType Ast.KInt),
     bad("() ^ (); 8"),
     good("let val x = () in x end", Ast.BaseType Ast.KUnit),
-    good("let fun id(x) = x in id 3 end", Ast.BaseType Ast.KInt)
+    good("let fun id(x) = x in id 3 end", Ast.BaseType Ast.KInt),
+    good("let fun id(x) = x in id 3; id () end", Ast.BaseType Ast.KUnit)
   ])
 end

@@ -146,8 +146,9 @@ TypeInference =  struct
             in
               case (inferImpl(fnExp, fnId), inferImpl(argExp, argId)) of
                 (SOME fnType, SOME argType) => (
-                  Unifier.unify(fnType, Ast.ArrowType(argType, Ast.TypeVariable constraint_id));
-                  SOME(Ast.TypeVariable constraint_id)
+                  case Unifier.unify(fnType, Ast.ArrowType(argType, Ast.TypeVariable constraint_id)) of
+                    SOME _ => SOME(Ast.TypeVariable constraint_id)
+                  | NONE => NONE
                   )
               | _ => NONE
             end
@@ -158,7 +159,7 @@ TypeInference =  struct
             )
           | Ast.Sequence subExps => (
             case multiInferImpl subExps of
-              SOME ts => SOME(List.hd (List.rev ts))
+              SOME ts => Unifier.unify(Ast.TypeVariable constraint_id, List.hd (List.rev ts))
             | NONE => NONE
             )
           | Ast.Fn(args, body) =>

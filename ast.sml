@@ -93,14 +93,40 @@ Ast = struct
   fun toString_sym(sym: Symbol) =
     if #id sym = 0 then #lab sym else (#lab sym) ^ "_" ^ (Int.toString (#id sym))
 
-  fun toString_type(BaseType(KInt)) = "int"
-    | toString_type(BaseType(KBool)) = "bool"
-    | toString_type(BaseType(KString)) = "string"
-    | toString_type(BaseType(KUnit)) = "unit"
-    | toString_type(TypeVariable(r)) = "'X_" ^ Int.toString r
-    | toString_type(ArrowType(l, r)) = toString_type(l) ^ " -> " ^ toString_type(r)
-    | toString_type(TupleType(l)) = toString_list " *" toString_type l
-    ;
+  fun niceTvarPrinter() =
+    let
+      val assigns: (char IntMap.map) ref = ref IntMap.empty
+      val next: char ref = ref #"a"
+    in
+      fn(t) => case t of
+        TypeVariable r =>
+          let
+            val assigned = case IntMap.find(!assigns, r) of
+              SOME a => a
+            | NONE => (
+              assigns := IntMap.insert(!assigns, r, !next);
+              next := Char.succ (!next);
+              Char.pred (!next)
+              )
+          in
+            "'" ^ (Char.toString assigned)
+          end
+      | _ => raise (Exceptions.IllegalStateException "unreachable")
+    end
+
+  fun simpleTvarPrinter(TypeVariable r) = "'X_" ^ (Int.toString r)
+    | simpleTvarPrinter(_) = raise (Exceptions.IllegalStateException "unreachable")
+
+  fun toString_type_helper(printer)(t) = case t of
+      BaseType(KInt) => "int"
+    | BaseType(KBool) => "bool"
+    | BaseType(KString) => "string"
+    | BaseType(KUnit) => "unit"
+    | TypeVariable(r) => printer t
+    | ArrowType(l, r) => (toString_type_helper printer l) ^ " -> " ^ (toString_type_helper printer r)
+    | TupleType(l) => toString_list " *" (toString_type_helper printer) l
+
+  fun toString_type(t: Type): string = toString_type_helper simpleTvarPrinter t
 
   fun toString_arg(Name(r)) = toString_sym (!r)
 

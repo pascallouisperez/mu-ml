@@ -1,8 +1,6 @@
 structure Helpers =
   struct
 
-    exception ParseError of string
-
     structure MUML = MumlParseFn(MumlLexer)
 
     fun string_to_tokens(inputString: string): MumlTokens.token list =
@@ -30,7 +28,7 @@ structure Helpers =
       in
         (case r
           of SOME(exp) => exp
-          |  _ => raise ParseError ("parse error on " ^ inputString))
+          |  _ => raise Exceptions.ParseError ("parse error on " ^ inputString))
       end
 
     fun string_to_infer(inputString: string): Ast.Type option =

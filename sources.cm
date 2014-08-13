@@ -12,9 +12,12 @@ is
   $/ml-lpt-lib.cm
   muml.grm : ml-antlr
   muml.lex : ml-ulex
-  maps.sml
+  int_map.sml
+  symbol_map.sml
+  string_map.sml
   symbol_analysis.sml
   type_inference.sml
   scope.sml
   ast.sml
   helpers.sml
+  exceptions.sml
