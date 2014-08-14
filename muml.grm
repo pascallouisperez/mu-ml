@@ -90,9 +90,9 @@ dec
   ;
 
 valdec
-  : ID OP exp %where ( OP = "=" ) => ( A.Valdec(A.Name(ref (A.create_symbol ID)), exp) )
+  : ID OP exp %where ( OP = "=" ) => ( A.Valdec(A.Name(ref (A.create_symbol ID)), false, exp) )
   ;
 
 fundec
-  : ID fnArgs OP exp %where ( OP = "=" ) => ( A.Fundec(A.Name(ref (A.create_symbol ID)), A.Fn(fnArgs, exp)) )
+  : ID fnArgs OP exp %where ( OP = "=" ) => ( A.Valdec(A.Name(ref (A.create_symbol ID)), true, A.Fn(fnArgs, exp)) )
   ;

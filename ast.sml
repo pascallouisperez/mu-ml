@@ -23,8 +23,7 @@ Ast = struct
     | IfThenElse of Exp * Exp * Exp
     | LetIn of Exp list * Exp
     | Fn of Arg list * Exp
-    | Valdec of Arg * Exp
-    | Fundec of Arg * Exp
+    | Valdec of Arg * bool * Exp
     ;
 
   datatype BaseKind =
@@ -75,12 +74,10 @@ Ast = struct
     | eq(Fn(l1, l2), Fn(r1, r2)) =
         listeq argeq (l1, r1) andalso
         eq(l2, r2)
-    | eq(Valdec(l1, l2), Valdec(r1, r2)) =
+    | eq(Valdec(l1, l2, l3), Valdec(r1, r2, r3)) =
         argeq(l1, r1) andalso
-        eq(l2, r2)
-    | eq(Fundec(l1, l2), Fundec(r1, r2)) =
-        argeq(l1, r1) andalso
-        eq(l2, r2)
+        l2 = r2 andalso
+        eq(l3, r3)
     | eq(_, _) = false
     ;
 
@@ -141,8 +138,8 @@ Ast = struct
     | toString(IfThenElse(c, l, r)) = "if " ^ toString(c) ^ " then " ^ toString(l) ^ " else " ^ toString(r)
     | toString(LetIn(decls, body)) = "let " ^ (toString_list ";" toString decls) ^ " in " ^ toString(body) ^ " end"
     | toString(Fn(args, body)) = "fn(" ^ (toString_list "," toString_arg args) ^ ") => " ^ toString(body)
-    | toString(Valdec(name, body)) = "val " ^ toString_arg(name) ^ " = " ^ toString(body)
-    | toString(Fundec(name, body)) = "fun " ^ toString_arg(name) ^ " = " ^ toString(body)
+    | toString(Valdec(name, recursive, body)) =
+        (if recursive then "fun " else "val ") ^ toString_arg(name) ^ " = " ^ toString(body)
     ;
 
 end

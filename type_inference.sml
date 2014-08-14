@@ -206,12 +206,7 @@ TypeInference =  struct
               SOME _ => inferImpl(body, constraint_id)
             | NONE => NONE
             )
-          | Ast.Valdec(arg, body) => (
-            case inferImpl(body, constraint_id) of
-              SOME t => Unifier.unify(argType(arg), t)
-            | NONE => NONE
-            )
-          | Ast.Fundec(arg, body) => (
+          | Ast.Valdec(arg, _, body) => (
             case inferImpl(body, constraint_id) of
               SOME t => Unifier.unify(argType(arg), t)
             | NONE => NONE

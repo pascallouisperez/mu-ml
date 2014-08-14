@@ -107,6 +107,7 @@ in
         [
           Ast.Valdec(
             Ast.Name(s("x")),
+            false,
             Ast.IntConstant(4)
           )
         ],
@@ -118,10 +119,12 @@ in
         [
           Ast.Valdec(
             Ast.Name(s("x")),
+            false,
             Ast.IntConstant(4)
           ),
           Ast.Valdec(
             Ast.Name(s("y")),
+            false,
             Ast.IntConstant(7)
           )
         ],
@@ -135,8 +138,9 @@ in
     makeTest("let fun id(x) = x in id 5 end",
       Ast.LetIn(
         [
-          Ast.Fundec(
+          Ast.Valdec(
             Ast.Name(s("id")),
+            true,
             Ast.Fn(
               [Ast.Name(s("x"))],
               Ast.Variable(s("x"))
@@ -152,8 +156,9 @@ in
     makeTest("let fun id(x) = x; val y = id in id 5 end",
       Ast.LetIn(
         [
-          Ast.Fundec(
+          Ast.Valdec(
             Ast.Name(s("id")),
+            true,
             Ast.Fn(
               [Ast.Name(s("x"))],
               Ast.Variable(s("x"))
@@ -161,6 +166,7 @@ in
           ),
           Ast.Valdec(
             Ast.Name(s("y")),
+            false,
             Ast.Variable(s("id"))
           )
         ],

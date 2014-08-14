@@ -84,20 +84,20 @@ in
     makeTest(
       (* symbol x which is the body of the val def, is a new symbol (no recursive val defs) *)
       Ast.LetIn(
-        [Ast.Valdec(Ast.Name(s("x")), Ast.Variable(s("x")))],
+        [Ast.Valdec(Ast.Name(s("x")), false, Ast.Variable(s("x")))],
         Ast.Variable(s("x"))
       ),
       Ast.LetIn(
-        [Ast.Valdec(Ast.Name(ref {id=2,lab="x"}), Ast.Variable(ref {id=1,lab="x"}))],
-        Ast.Variable(ref {id=2,lab="x"})
+        [Ast.Valdec(Ast.Name(ref {id=1,lab="x"}), false, Ast.Variable(ref {id=2,lab="x"}))],
+        Ast.Variable(ref {id=1,lab="x"})
       )
     ),
     makeTest(Helpers.string_to_ast("let val x = 42; val x = x; val x = x in x end"),
       Ast.LetIn(
         [
-          Ast.Valdec(Ast.Name(ref {id=1,lab="x"}), Ast.IntConstant(42)),
-          Ast.Valdec(Ast.Name(ref {id=2,lab="x"}), Ast.Variable(ref {id=1,lab="x"})),
-          Ast.Valdec(Ast.Name(ref {id=3,lab="x"}), Ast.Variable(ref {id=2,lab="x"}))
+          Ast.Valdec(Ast.Name(ref {id=1,lab="x"}), false, Ast.IntConstant(42)),
+          Ast.Valdec(Ast.Name(ref {id=2,lab="x"}), false, Ast.Variable(ref {id=1,lab="x"})),
+          Ast.Valdec(Ast.Name(ref {id=3,lab="x"}), false, Ast.Variable(ref {id=2,lab="x"}))
         ],
         Ast.Variable(ref {id=3,lab="x"})
       )
@@ -105,11 +105,11 @@ in
     makeTest(
       (* symbol x which is the body of the fun def refers to the function being defined (recursion) *)
       Ast.LetIn(
-        [Ast.Fundec(Ast.Name(s("x")), Ast.Fn([], Ast.Variable(s("x"))))],
+        [Ast.Valdec(Ast.Name(s("x")), true, Ast.Fn([], Ast.Variable(s("x"))))],
         Ast.Variable(s("x"))
       ),
       Ast.LetIn(
-        [Ast.Fundec(Ast.Name(ref {id=1,lab="x"}), Ast.Fn([], Ast.Variable(ref {id=1,lab="x"})))],
+        [Ast.Valdec(Ast.Name(ref {id=1,lab="x"}), true, Ast.Fn([], Ast.Variable(ref {id=1,lab="x"})))],
         Ast.Variable(ref {id=1,lab="x"})
       )
     ),

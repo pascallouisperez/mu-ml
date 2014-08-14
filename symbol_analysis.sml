@@ -54,23 +54,14 @@ SymbolAnalysis = struct
           in
             resolveImpl(bodyScope, body); s
           end
-      | resolveImpl(s, Ast.Valdec(arg, body)) =
-          let
-            val bodyScope = LinkedScope.create_inner s
-            val valScope = LinkedScope.create_inner s
-            val (name, symbol) = (resolveImpl(bodyScope, body); resolveArgImpl(valScope, arg, true))
-          in
-            LinkedScope.insert(valScope, name, symbol);
-            valScope
-          end
-      | resolveImpl(s, Ast.Fundec(arg, body)) =
+      | resolveImpl(s, Ast.Valdec(arg, recursive, body)) =
           let
             val bodyScope = LinkedScope.create_inner s
             val valScope = LinkedScope.create_inner s
             val (name, symbol) = resolveArgImpl(valScope, arg, true)
           in
+            if recursive then LinkedScope.insert(bodyScope, name, symbol) else ();
             LinkedScope.insert(valScope, name, symbol);
-            LinkedScope.insert(bodyScope, name, symbol);
             resolveImpl(bodyScope, body);
             valScope
           end
