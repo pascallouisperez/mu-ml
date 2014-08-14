@@ -108,14 +108,6 @@ TypeInference =  struct
   structure Unifier = UnifierFn()
 
   fun infer(t: SymbolAnalysis.result): Ast.Type option = let
-    fun op_of_type("+") = Ast.BaseType Ast.KInt
-      | op_of_type("-") = Ast.BaseType Ast.KInt
-      | op_of_type("*") = Ast.BaseType Ast.KInt
-      | op_of_type("%") = Ast.BaseType Ast.KInt
-      | op_of_type("/") = Ast.BaseType Ast.KInt
-      | op_of_type("^") = Ast.BaseType Ast.KString
-      ;
-
     fun fresh(t) =
       let
         val assigns: (int IntMap.map) ref = ref IntMap.empty
@@ -155,10 +147,22 @@ TypeInference =  struct
           | Ast.Unit => SOME(Ast.BaseType Ast.KUnit)
           | Ast.InfixApp(l, opr, r) =>
               let
-                val branch_type = op_of_type opr
+                val (branchType, oprResultType) = case opr of
+                    "+" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
+                  | "-" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
+                  | "*" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
+                  | "%" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
+                  | "/" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KInt)
+                  | "^" => (Ast.BaseType Ast.KString, Ast.BaseType Ast.KString)
+                  | "=" => (Ast.BaseType Ast.KInt, Ast.BaseType Ast.KBool)
+                val branchId = Unifier.add(branchType)
               in
-                case (inferImpl(l, constraint_id), inferImpl(r, constraint_id)) of
-                  (SOME(_), SOME(_)) => SOME(branch_type)
+                case (inferImpl(l, branchId), inferImpl(r, branchId)) of
+                  (SOME lType, SOME rType) => (
+                    case (Unifier.unify(branchType, lType), Unifier.unify(branchType, rType)) of
+                      (SOME _, SOME _) => SOME(oprResultType)
+                    | _ => NONE
+                    )
                 | _ => NONE
               end
           | Ast.App(fnExp, argExp) =>
@@ -211,7 +215,20 @@ TypeInference =  struct
               SOME t => Unifier.unify(argType(arg), t)
             | NONE => NONE
             )
-          | _ => NONE
+          | Ast.IfThenElse(condition, ifExp, elseExp) =>
+            let
+              val conditionTypeOpt = inferImpl(condition, Unifier.next_id())
+              val ifTypeOpt = inferImpl(ifExp, constraint_id)
+              val elseTypeOpt = inferImpl(elseExp, constraint_id)
+            in
+              case (conditionTypeOpt, ifTypeOpt, elseTypeOpt) of
+                (SOME conditionType, SOME ifType, SOME elseType) => (
+                  case Unifier.unify(Ast.BaseType Ast.KBool, conditionType) of
+                    SOME _ => Unifier.unify(ifType, elseType)
+                  | NONE => NONE
+                  )
+              | _ => NONE
+            end
       in
         case optInferedType of
           SOME t => Unifier.unify(Unifier.get constraint_id, t)
