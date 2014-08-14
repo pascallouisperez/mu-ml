@@ -108,6 +108,11 @@ TypeInference =  struct
   structure Unifier = UnifierFn()
 
   fun infer(t: SymbolAnalysis.result): Ast.Type option = let
+    fun 'a apply(f: 'a -> Ast.Type option)(opt: 'a option): Ast.Type option =
+      case opt of SOME t => f t | NONE => NONE
+
+    fun argType(Ast.Name r) = Unifier.get (#id (!r))
+
     fun fresh(t) =
       let
         val assigns: (int IntMap.map) ref = ref IntMap.empty
@@ -131,8 +136,6 @@ TypeInference =  struct
 
     fun inferImpl(exp: Ast.Exp, constraint_id: int): Ast.Type option =
       let
-        fun argType(Ast.Name r) = Unifier.get (#id (!r))
-
         fun multiInferImpl(subExps: Ast.Exp list): Ast.Type list option =
           List.foldr
             (fn(optType, optList) => case (optType, optList) of
@@ -170,23 +173,16 @@ TypeInference =  struct
               val (fnId, argId) = (Unifier.next_id(), Unifier.next_id())
             in
               case (inferImpl(fnExp, fnId), inferImpl(argExp, argId)) of
-                (SOME fnType, SOME argType) => (
-                  case Unifier.unify(fnType, Ast.ArrowType(argType, Ast.TypeVariable constraint_id)) of
-                    SOME _ => SOME(Ast.TypeVariable constraint_id)
-                  | NONE => NONE
-                  )
+                (SOME fnType, SOME argType) =>
+                  apply
+                    (fn(_) => SOME(Ast.TypeVariable constraint_id))
+                    (Unifier.unify(fnType, Ast.ArrowType(argType, Ast.TypeVariable constraint_id)))
               | _ => NONE
             end
-          | Ast.Tuple subExps => (
-            case multiInferImpl subExps of
-              SOME ts => SOME(Ast.TupleType ts)
-            | NONE => NONE
-            )
-          | Ast.Sequence subExps => (
-            case multiInferImpl subExps of
-              SOME ts => Unifier.unify(Ast.TypeVariable constraint_id, List.hd (List.rev ts))
-            | NONE => NONE
-            )
+          | Ast.Tuple subExps =>
+            apply (fn(ts) => SOME(Ast.TupleType ts)) (multiInferImpl subExps)
+          | Ast.Sequence subExps =>
+            apply (fn(ts) => Unifier.unify(Ast.TypeVariable constraint_id, List.hd (List.rev ts))) (multiInferImpl subExps)
           | Ast.Fn(args, body) =>
             let
               val bodyTypeOpt = inferImpl(body, Unifier.next_id())
@@ -197,24 +193,16 @@ TypeInference =  struct
                 | hd :: nil => argType hd
                 | hd :: tl => Ast.TupleType(List.map argType args)
             in
-              case bodyTypeOpt of
-                SOME t => SOME(Ast.ArrowType(argsType, t))
-              | NONE => NONE
+              apply (fn(t) => SOME(Ast.ArrowType(argsType, t))) bodyTypeOpt
             end
           | Ast.Variable r =>
               if IntBinarySet.member(#polymorphic_symbols t, #id (!r))
               then SOME(fresh (Unifier.get (#id (!r))))
               else SOME(Unifier.get (#id (!r)))
-          | Ast.LetIn(decls, body) => (
-            case multiInferImpl decls of
-              SOME _ => inferImpl(body, constraint_id)
-            | NONE => NONE
-            )
-          | Ast.Valdec(arg, _, body) => (
-            case inferImpl(body, constraint_id) of
-              SOME t => Unifier.unify(argType(arg), t)
-            | NONE => NONE
-            )
+          | Ast.LetIn(decls, body) =>
+            apply (fn(t) => inferImpl(body, constraint_id)) (multiInferImpl decls)
+          | Ast.Valdec(arg, _, body) =>
+            apply (fn(t) => Unifier.unify(argType(arg), t)) (inferImpl(body, constraint_id))
           | Ast.IfThenElse(condition, ifExp, elseExp) =>
             let
               val conditionTypeOpt = inferImpl(condition, Unifier.next_id())
@@ -222,17 +210,12 @@ TypeInference =  struct
               val elseTypeOpt = inferImpl(elseExp, constraint_id)
             in
               case (conditionTypeOpt, ifTypeOpt, elseTypeOpt) of
-                (SOME conditionType, SOME ifType, SOME elseType) => (
-                  case Unifier.unify(Ast.BaseType Ast.KBool, conditionType) of
-                    SOME _ => Unifier.unify(ifType, elseType)
-                  | NONE => NONE
-                  )
+                (SOME conditionType, SOME ifType, SOME elseType) =>
+                  apply (fn(_) => Unifier.unify(ifType, elseType)) (Unifier.unify(Ast.BaseType Ast.KBool, conditionType))
               | _ => NONE
             end
       in
-        case optInferedType of
-          SOME t => Unifier.unify(Unifier.get constraint_id, t)
-        | NONE => NONE
+        apply (fn(t) => Unifier.unify(Unifier.get constraint_id, t)) optInferedType
       end
   in
     Unifier.reset(#max_symbol_id t);
