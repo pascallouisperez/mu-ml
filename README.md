@@ -1,14 +1,21 @@
 # µML — Learn Compilers with ML
 
-Micro-ML (µML) is a simplified version of the [Standard ML Grammar](http://www.mpi-sws.org/~rossberg/sml.html).
+Micro-ML (µML) is a simplified version of Standard ML (full [SML grammar here](http://www.mpi-sws.org/~rossberg/sml.html)).
 
-Deltas from ML are:
+Features include:
+
+* Integers, strings, booleans and unit
+* Higher order functions, including anonymous functions
+* Let polymorphism
+* Pure functional language
+
+Deltas from SML are:
 
 * No module system, signatures, or functor related features
 * No pattern matching
 * No abstract data types
 * No records, and associated bells and whistles
-* Simplified constants (integers and strings only)
+* Simplified constants (integers, strings, booleans and unit only)
 
 Or said another way, it's a small functional language expressed with ML syntax.
 
